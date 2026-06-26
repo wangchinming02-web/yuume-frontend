@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚙️ 優芽應援站 - 系統管理後台</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .admin-container {
+      max-width: 900px; /* 💡 稍微拓寬，容納新欄位讓列表更好閱讀 */
+      margin: 50px auto;
+    }
+    .brand-title {
+      color: #ff9800; /* 優芽橘色應援色 */
+      font-weight: bold;
+    }
+    .custom-table th {
+      background-color: #343a40;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app" class="container admin-container">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">⚙️ <span class="brand-title">優芽</span>應援站活動管理後台</h2>
+      <p class="text-muted">在這裡新增或刪除活動，都會即時同步至首頁</p>
+    </div>
+
+    <div class="card shadow border-0 mb-5">
+      <div class="card-header bg-dark text-white p-3">
+  <h5 class="mb-0 d-inline-block">🚀 新增活動行程</h5>
+  <div class="float-end">
+    <a href="upload.html" class="btn btn-sm btn-outline-warning me-2">圖片後台 📸</a>
+    <a href="index.html" class="btn btn-sm btn-outline-light">回首頁 🏠</a>
+  </div>
+</div>
+      <div class="card-body p-4">
+        <form @submit.prevent="submitNewEvent">
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold">活動名稱</label>
+            <input type="text" class="form-control" v-model="form.title" placeholder="例如：優芽特化應援 LIVE 開演決定！" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-bold">活動日期</label>
+              <input type="date" class="form-control" v-model="form.event_date" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-bold">活動分類</label>
+              <select class="form-select" v-model="form.category" required>
+                <option value="live">🎤 舞台出演</option>
+                <option value="cheki">📸 特典會</option>
+                <option value="off"> Off 會 </option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-bold">活動狀態</label>
+              <select class="form-select" v-model="form.status" required>
+                <option value="販售中">🔴 販售中</option>
+                <option value="已售完">⚪ 已售完</option>
+                <option value="停止販售">❌ 停止販售</option>
+                <option value="已結束">🔒 已結束</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">活動地點 / 詳細備註</label>
+            <input type="text" class="form-control" v-model="form.location" list="location-list" placeholder="請輸入或選擇地點" required>
+            
+            <datalist id="location-list">
+              <option v-for="loc in existingLocations" :key="loc" :value="loc"></option>
+            </datalist>
+            <div class="form-text text-muted" v-if="existingLocations.length > 0">💡 提示：按兩下輸入框可選擇歷史地點</div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 fw-bold py-2" :disabled="isSubmitting">
+            {{ isSubmitting ? '正在寫入資料庫...' : '🚀 一鍵寫入 MySQL 資料庫' }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow border-0">
+      <div class="card-header bg-secondary text-white p-3">
+        <h5 class="mb-0">📋 現有活動行程列表與管理</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle custom-table mb-0">
+            <thead>
+              <tr>
+                <th style="width: 15%">日期</th>
+                <th style="width: 15%">分類</th>
+                <th style="width: 40%">活動名稱 / 地點</th>
+                <th style="width: 15%">狀態</th> <th style="width: 15%" class="text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="event in events" :key="event.id">
+                <td class="fw-bold">{{ event.date }}</td>
+                <td>
+                  <span class="badge bg-dark" v-if="event.category === 'live'">🎤 舞台出演</span>
+                  <span class="badge bg-secondary text-dark" v-else-if="event.category === 'cheki'">📸 特典會</span>
+                  <span class="badge bg-warning text-dark" v-else>🌱 Off 會</span>
+                </td>
+                <td>
+                  <strong>{{ event.title }}</strong><br>
+                  <small class="text-muted">📍 {{ event.location }}</small>
+                </td>
+                <td>
+                  <span :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">
+                    {{ event.status }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-danger btn-sm fw-bold px-3" @click="deleteEvent(event.id, event.title)">
+                    🗑️ 刪除
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="events.length === 0">
+                <td colspan="5" class="text-center text-muted py-4">資料庫中目前沒有任何活動。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
+<script>
+  const { createApp } = Vue;
+
+  createApp({
+    data() {
+      return {
+        isSubmitting: false,
+        existingLocations: [],
+        events: [],
+        form: { title: '', event_date: '', category: 'live', status: '販售中', location: '' }
+      }
+    },
+    async mounted() {
+      // 從 localStorage 獲取 token
+      const token = localStorage.getItem('admin_token');
+      
+      try {
+        const checkRes = await fetch('http://127.0.0.1:8000/api/check-auth', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        // 驗證失敗時，跳出提示框並跳轉
+        if (!checkRes.ok) {
+          alert('⚠️ 尚未登入或登入已過期，請先前往登入頁面。');
+          window.location.href = 'login.html';
+          return;
+        }
+        
+        // 驗證成功，繼續載入資料
+        this.fetchExistingLocations();
+        this.fetchEventData();
+      } catch (error) {
+        // 發生連線錯誤時也視同未登入
+        alert('⚠️ 系統連線異常，請重新登入。');
+        window.location.href = 'login.html';
+      }
+    },
+    methods: {
+      getHeaders() {
+        return {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+        };
+      },
+      async fetchEventData() {
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/events');
+          const data = await response.json();
+          this.events = data.map(item => ({ ...item }));
+        } catch (error) { console.error(error); }
+      },
+      async fetchExistingLocations() {
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/locations');
+          if (response.ok) this.existingLocations = await response.json();
+        } catch (error) { console.error(error); }
+      },
+      async submitNewEvent() {
+        this.isSubmitting = true;
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/events', {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(this.form)
+          });
+
+          if (response.ok) {
+            alert('✨ 成功新增！');
+            this.fetchEventData();
+            this.form = { title: '', event_date: '', category: 'live', status: '販售中', location: '' };
+          } else {
+            alert('權限不足或輸入錯誤');
+          }
+        } finally { this.isSubmitting = false; }
+      },
+      async deleteEvent(id, title) {
+        if (!confirm(`⚠️ 確定要刪除「${title}」嗎？`)) return;
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/events/${id}`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+          });
+          if (response.ok) {
+            alert('🗑️ 刪除成功');
+            this.fetchEventData();
+          }
+        } catch (error) { alert('刪除失敗'); }
+      }
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>

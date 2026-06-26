@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📸 優芽應援站 - 獨立多圖批量上傳系統</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; }
+    .upload-container { max-width: 700px; margin: 50px auto; }
+    .preview-thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; margin: 4px; border: 1px solid #dee2e6; }
+    .preview-scroll { max-height: 200px; overflow-y: auto; border: 1px inset #eee; padding: 10px; border-radius: 6px; background: #fff; }
+  </style>
+</head>
+<body>
+
+  <div id="app" class="container upload-container">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">📸 應援相簿獨立批量上傳系統</h2>
+      <p class="text-muted">支援多選圖片同步至 GitHub，自動產出全球加速 jsDelivr CDN 網址</p>
+    </div>
+
+    <div class="card shadow border-0">
+      <div class="card-header bg-dark text-white p-3">
+        <h5 class="mb-0 d-inline-block">📦 批量上傳新照片</h5>
+        <a href="admin.html" class="btn btn-sm btn-outline-light float-end">回管理後台 ⚙️</a>
+      </div>
+      <div class="card-body p-4">
+        <form @submit.prevent="uploadPhotos">
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold d-flex justify-content-between align-items-center">
+              <span>選擇活動分類資料夾</span>
+              <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" @click="createNewCategory">
+                ➕ 快速新增分類
+              </button>
+            </label>
+            
+            <select class="form-select" v-model="selectedCategoryId" :disabled="isCategoryLoading" required>
+              <option value="" disabled selected>
+                {{ isCategoryLoading ? '⏳ 分類載入中...' : '--- 請選擇一個活動分類 ---' }}
+              </option>
+              <option v-for="category in categories" :key="category.id" :value="category.id">
+                📁 {{ category.name }} ({{ category.folder_slug }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">選擇照片（可多選）</label>
+            <input type="file" class="form-control" accept="image/*" @change="onFileChange" multiple required :disabled="isUploading">
+            <div class="form-text text-muted">
+              你可以按住 Ctrl 或 Shift 鍵一次選取多張。建議使用 Python 瘦身後的 <b>optimized_webp</b> 資料夾檔案。
+            </div>
+          </div>
+
+          <div class="mb-4" v-if="previewUrls.length > 0">
+            <p class="fw-bold text-muted mb-2">📷 待上傳圖片預覽 (共 {{ previewUrls.length }} 張)：</p>
+            <div class="preview-scroll d-flex flex-wrap">
+              <img v-for="(url, idx) in previewUrls" :key="idx" :src="url" class="preview-thumbnail shadow-sm">
+            </div>
+          </div>
+
+          <div class="mb-4" v-if="isUploading">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-primary fw-bold">{{ uploadStatusText }}</span>
+              <span class="fw-bold text-primary">{{ uploadPercent }}%</span>
+            </div>
+            <div class="progress" style="height: 12px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: uploadPercent + '%' }"></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 fw-bold py-2" :disabled="isUploading || isCategoryLoading || selectedFiles.length === 0">
+            {{ isUploading ? '正在批量上傳中，請勿關閉視窗...' : '🚀 開始批量上傳圖片 (' + selectedFiles.length + '張)' }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow border-0 mt-4 bg-light" v-if="successUrls.length > 0">
+      <div class="card-body">
+        <h6 class="fw-bold text-success">✨ 成功上傳 {{ successUrls.length }} 張！最新 CDN 網址：</h6>
+        <div class="preview-scroll mt-2">
+          <div class="input-group mb-2" v-for="(url, idx) in successUrls" :key="idx">
+            <input type="text" class="form-control text-muted bg-white" :value="url" readonly style="font-size: 0.85rem;">
+            <a :href="url" target="_blank" class="btn btn-sm btn-outline-secondary d-flex align-items-center">開啟觀看 🔗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue
+
+    createApp({
+      data() {
+        return {
+          isUploading: false,
+          isCategoryLoading: true,
+          selectedFiles: [],
+          previewUrls: [],
+          successUrls: [],
+          categories: [],
+          selectedCategoryId: '',
+          currentUploadIndex: 0,
+          uploadPercent: 0,
+          uploadStatusText: ''
+        }
+      },
+      async mounted() {
+        // 🛡️ 登入驗證機制
+        const token = localStorage.getItem('admin_token');
+        try {
+          const checkRes = await fetch('http://127.0.0.1:8000/api/check-auth', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          
+          if (!checkRes.ok) {
+            alert('⚠️ 請先登入管理員帳號');
+            window.location.href = 'login.html';
+            return;
+          }
+          this.fetchCategories();
+        } catch (error) {
+          window.location.href = 'login.html';
+        }
+      },
+      methods: {
+        // 封裝 Header 獲取方式
+        getHeaders() {
+          return {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+          };
+        },
+
+        async fetchCategories() {
+          this.isCategoryLoading = true;
+          try {
+            const response = await fetch('http://127.0.0.1:8000/api/album-categories', {
+              headers: this.getHeaders()
+            });
+            if (response.ok) this.categories = await response.json();
+          } catch (error) {
+            console.error("抓取分類發生錯誤:", error);
+          } finally {
+            this.isCategoryLoading = false;
+          }
+        },
+
+        async createNewCategory() {
+          const name = prompt("請輸入新活動的【顯示名稱】：");
+          if (!name) return;
+          const slug = prompt("請輸入新活動的【資料夾代碼】：");
+          if (!slug) return;
+
+          try {
+            const response = await fetch('http://127.0.0.1:8000/api/album-categories', {
+              method: 'POST',
+              headers: { 
+                ...this.getHeaders(),
+                'Content-Type': 'application/json' 
+              },
+              body: JSON.stringify({ name: name, folder_slug: slug })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+              alert('🎉 新分類新增成功！');
+              await this.fetchCategories();
+              this.selectedCategoryId = result.id;
+            } else {
+              alert('新增失敗: ' + (result.message || '請檢查權限'));
+            }
+          } catch (error) {
+            alert('後端連線異常');
+          }
+        },
+
+        onFileChange(event) {
+          const files = event.target.files;
+          if (!files.length) return;
+          this.selectedFiles = Array.from(files);
+          this.successUrls = [];
+          this.previewUrls.forEach(url => URL.revokeObjectURL(url));
+          this.previewUrls = this.selectedFiles.map(file => URL.createObjectURL(file));
+        },
+        
+        async uploadPhotos() {
+          if (this.selectedFiles.length === 0 || !this.selectedCategoryId) {
+            alert('請確認已選擇分類資料夾與照片檔案！');
+            return;
+          }
+
+          this.isUploading = true;
+          this.successUrls = [];
+          const totalFiles = this.selectedFiles.length;
+
+          for (let i = 0; i < totalFiles; i++) {
+            this.currentUploadIndex = i + 1;
+            this.uploadStatusText = `正在上傳 ${this.currentUploadIndex} / ${totalFiles} ...`;
+            this.uploadPercent = Math.round((i / totalFiles) * 100);
+
+            const formData = new FormData();
+            formData.append('photo', this.selectedFiles[i]);
+            formData.append('category_id', this.selectedCategoryId);
+
+            try {
+              const response = await fetch('http://127.0.0.1:8000/api/photos/batch-upload', {
+                method: 'POST',
+                headers: this.getHeaders(), // 🛡️ 加入 Token 驗證
+                body: formData
+              });
+
+              const result = await response.json();
+              if (response.ok) {
+                this.successUrls.push(result.url);
+              }
+            } catch (error) {
+              console.error("上傳發生錯誤:", error);
+            }
+          }
+
+          this.uploadPercent = 100;
+          this.isUploading = false;
+          alert(`上傳完成！共成功 ${this.successUrls.length} 張。`);
+          this.selectedFiles = [];
+          this.previewUrls = [];
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

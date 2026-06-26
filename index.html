@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>優芽應援站</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 🎨 基礎變數與光/深模式設定 */
+        :root,
+        [data-bs-theme="light"] {
+            --bg-main: #fcfcf7;
+            --sidebar-bg: linear-gradient(135deg, #eaf7ea 0%, #f4fbf4 100%);
+            --profile-card-bg: rgba(255, 255, 255, 0.75);
+            --profile-card-shadow: 0 8px 32px 0 rgba(185, 242, 185, 0.15);
+            --poem-text: #556b2f;
+            --section-title: #385438;
+            --section-border: #d5ebd5;
+            --card-bg: #ffffff;
+            --card-border: #dfeedf;
+            --table-th-bg: #edf7ed;
+            --table-td-border: #f1fcf1;
+            --time-block-bg: rgba(235, 247, 235, 0.6);
+            --time-block-border: #c2e6c2;
+        }
+
+        [data-bs-theme="dark"] {
+            --bg-main: #121812;
+            --sidebar-bg: linear-gradient(135deg, #182518 0%, #131c13 100%);
+            --profile-card-bg: rgba(25, 35, 25, 0.65);
+            --profile-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --poem-text: #a2b982;
+            --section-title: #c2e6c2;
+            --section-border: #2d422d;
+            --card-bg: #1a241a;
+            --card-border: #2d422d;
+            --table-th-bg: #223322;
+            --table-td-border: #1a291a;
+            --time-block-bg: rgba(34, 51, 34, 0.4);
+            --time-block-border: #3d5c3d;
+
+            .text-dark {
+                color: #f8f9fa !important;
+            }
+
+            .text-muted {
+                color: #a0aba0 !important;
+            }
+
+            .bg-light {
+                background-color: #222d22 !important;
+            }
+        }
+
+        /* 浮動深色模式切換鈕 (層級拉到最高) */
+        .theme-toggle-btn {
+            position: fixed !important;
+            bottom: 25px !important;
+            right: 25px !important;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #426b42;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 9999 !important;
+            /* 確保在最上層 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            background-color: #4a7c59;
+        }
+
+        /* 其餘排版樣式 */
+        .background-container {
+            background-color: var(--bg-main);
+            min-height: 100vh;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .member-sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .member-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            .main-content-scroll {
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            .main-content-scroll.home-tab-active {
+                overflow-y: hidden;
+            }
+        }
+
+        .profile-card {
+            background: var(--profile-card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: var(--profile-card-shadow);
+            width: 100%;
+        }
+
+        .intro-poem p {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--poem-text);
+        }
+
+        /* 瀑布流 */
+        .gallery-container {
+            display: block !important;
+            column-count: 3;
+            column-gap: 15px;
+            width: 100% !important;
+        }
+
+        .gallery-item {
+            display: inline-block !important;
+            break-inside: avoid !important;
+            margin-bottom: 15px !important;
+            width: 100% !important;
+        }
+
+        .gallery-card {
+            display: block !important;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            pointer-events: none;
+            transition: transform 0.3s;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item a {
+            display: block;
+            cursor: zoom-in;
+            pointer-events: auto;
+        }
+
+        /* 其他輔助樣式 */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--section-title);
+            border-bottom: 2px solid var(--section-border);
+            padding-bottom: 8px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .info-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+        }
+
+        .custom-table th {
+            background-color: var(--table-th-bg) !important;
+            color: var(--section-title) !important;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        @media (max-width: 992px) {
+            .gallery-container {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-container {
+                column-count: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" class="container-fluid p-0 background-container">
+
+        <button class="theme-toggle-btn" @click="toggleTheme" :title="isDarkMode ? '切換為淺色模式' : '切換為深色模式'">
+            {{ isDarkMode ? '☀️' : '🌙' }}
+        </button>
+
+        <div class="row g-0">
+
+            <div class="col-12 col-md-4 member-sidebar d-flex flex-column align-items-center p-4">
+
+                <div class="profile-card p-3 mb-4">
+                    <div class="text-center">
+                        <img src="https://picsum.photos/250/300" alt="公式照" class="img-fluid rounded shadow mb-3"
+                            style="max-height: 180px; object-fit: cover;" />
+                        <h2 class="fw-bold mb-1 text-dark fs-4">{{ memberName }}</h2>
+                        <p class="text-muted small mb-3">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
+                    </div>
+
+                    <div class="intro-poem text-center border-top border-bottom py-3 my-3"
+                        style="border-color: var(--card-border) !important;">
+                        <p>如新芽般青翠</p>
+                        <p>如枝條般優雅</p>
+                        <p class="fw-bold my-2 text-dark">我是北部的 solo 演出者</p>
+                        <p>希望能化作夏日的清爽微風</p>
+                        <p>與樹蔭間灑落的陽光</p>
+                        <p class="mb-0">透過演出給予大家溫柔的力量</p>
+                    </div>
+
+                    <div class="small lh-base mb-3" style="font-size: 0.85rem;">
+                        <p class="mb-1 text-dark"><strong>暱稱：</strong>{{ nickname }}</p>
+                        <p class="mb-2 text-dark"><strong>代表顏色：</strong>{{ supportColor }} <span class="badge"
+                                style="background-color: #77dd77; padding: 2px 4px;">🌱</span></p>
+
+                        <div class="mb-1">
+                            <span class="text-success fw-bold">💚 喜歡：</span>
+                            <span class="text-muted">{{ likes }}</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-danger fw-bold">🐛 不拿手：</span>
+                            <span class="text-muted">{{ dislikes }}</span>
+                        </div>
+
+                        <div class="p-2 rounded bg-light border-start border-success border-3">
+                            <div class="fw-bold text-dark mb-1" style="font-size: 0.8rem;">📌 座右銘</div>
+                            <div class="text-muted font-monospace" style="font-size: 0.75rem;">
+                                <div>• 愛拼才會芽💪🏻🌱</div>
+                                <div>• 睡眠是人生的還原劑💤</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-buttons d-flex flex-wrap justify-content-center gap-2 mb-3">
+                        <a :href="fbUrl" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">FB</a>
+                        <a :href="fbFanpageUrl" target="_blank" class="btn btn-outline-info btn-sm rounded-pill">粉專</a>
+                        <a :href="igUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">IG</a>
+                        <a :href="xUrl" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill">X</a>
+                        <a :href="ytUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">YouTube</a>
+                    </div>
+
+                    <div class="action-buttons d-flex flex-column gap-2">
+                        <a :href="blogUrl" target="_blank"
+                            class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm py-2"
+                            style="background-color: #4a7c59; border-color: #4a7c59; font-size: 0.9rem;">
+                            ❀優芽栽培日誌❀ (官方部落格)
+                        </a>
+                        <a :href="shopUrl" target="_blank"
+                            class="btn btn-success w-100 fw-bold rounded-pill shadow-sm py-2"
+                            style="font-size: 0.9rem;">
+                            🛒 優芽種苗場 (周邊購買)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-buttons w-100 px-1 d-flex flex-column gap-2 mb-4">
+                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                        :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
+                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                        :class="{ active: currentTab === 'live' }" @click="currentTab = 'live'">🎤 舞台出演行程</button>
+                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                        :class="{ active: currentTab === 'cheki' }" @click="currentTab = 'cheki'">📸 特典會行程</button>
+                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                        :class="{ active: currentTab === 'off' }" @click="currentTab = 'off'">🌱 Off 會 </button>
+
+                    <!-- 🆕 新增：物販與須知按鈕 -->
+                    <button class="btn btn-outline-success w-100 py-1.5 small rounded-pill"
+                        @click="currentTab = 'goods'">
+                        🛒 物販與應援須知
+                    </button>
+
+                    <!-- 原有的相簿 Dropdown -->
+                    <div class="dropdown w-100">
+                        <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill dropdown-toggle"
+                            :class="{ active: currentTab === 'gallery' }" type="button" id="galleryDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            📸 相簿(管理者自肥)
+                        </button>
+                        <ul class="dropdown-menu w-100 rounded-3 shadow border-0 mt-1" aria-labelledby="galleryDropdown"
+                            style="background-color: var(--card-bg);">
+                            <li>
+                                <a class="dropdown-content-link text-start ps-3 py-2 d-block small text-decoration-none text-dark fw-bold"
+                                    href="#" @click.prevent="selectGallery('all')">
+                                    🖼️ 顯示全部相簿
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li v-if="isCategoryLoading" class="text-center py-2 text-muted small">載入分類中...</li>
+                            <li v-else v-for="category in albumCategories" :key="category.id">
+                                <a class="dropdown-content-link text-start ps-3 py-2 d-block small text-decoration-none text-muted"
+                                    href="#" @click.prevent="selectGallery(category.folder_slug)">
+                                    📁 {{ category.name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="time-info-block p-3 rounded text-center font-monospace lh-sm mt-3 mt-md-auto shadow-sm">
+                    <div>🕒 現在時間：<span class="fw-bold text-dark">{{ currentTime }}</span>
+                    </div>
+                    <div>🔄 最後更新：<span class="text-muted">{{ lastUpdateTime
+                            }}</span></div>
+                    <div><span class="text-dark">管理者:發芽的白學家/臭執著仔</span></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-8 offset-md-4 p-4 p-md-5 main-content-scroll"
+                :class="{ 'home-tab-active': currentTab === 'home' }">
+
+                <section class="mb-4" v-if="currentTab === 'home'">
+                    <h4 class="section-title mb-3">★★★ 最新情報 ★★★</h4>
+
+                    <div v-if="isEventLoading" class="placeholder-glow">
+                        <div class="card info-card p-3 mb-2 shadow-sm">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="placeholder col-2 bg-secondary opacity-25 rounded"></span>
+                                <span class="placeholder col-2 bg-secondary opacity-25 rounded"></span>
+                            </div>
+                            <h5 class="mb-2"><span class="placeholder col-8 bg-secondary opacity-25 d-block"></span>
+                            </h5>
+                            <p class="mb-0"><span class="placeholder col-4 bg-secondary opacity-25 d-block"></span></p>
+                        </div>
+                    </div>
+
+                    <div v-else v-for="event in latestEventsGroup" :key="event.id"
+                        class="card info-card p-3 mb-2 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-danger">最新公告</span>
+                                <span :class="['badge', event.status === '已結束' ? 'bg-secondary' : 'bg-success']">{{
+                                    event.status }}</span>
+                            </div>
+                            <span class="badge bg-dark fw-bold" v-if="event.category === 'live'">🎤 舞台出演</span>
+                            <span class="badge bg-secondary text-dark fw-bold" v-else-if="event.category === 'cheki'">📸
+                                特典會</span>
+                            <span class="badge bg-warning text-dark fw-bold" v-else>🌱 Off 會</span>
+                        </div>
+                        <h5 class="mb-1 text-dark" style="font-size: 1.1rem;">{{ event.title }}</h5>
+                        <p class="text-muted mb-0 small">日期：{{ event.date }}</p>
+                        <p class="text-muted mb-0" v-if="event.note"><small>地點：{{ event.note }}</small></p>
+                    </div>
+                </section>
+
+                <section class="home-schedule-section mb-0" v-if="currentTab === 'home'">
+                    <h4 class="section-title mb-3">📅 近期行程公告 ▼</h4>
+
+                    <div class="table-responsive home-table-container">
+                        <table class="table table-hover align-middle custom-table" :key="'table-home'">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%">日期</th>
+                                    <th style="width: 20%">類型</th>
+                                    <th style="width: 45%">活動名稱 / 備註</th>
+                                    <th style="width: 15%">狀態</th>
+                                </tr>
+                            </thead>
+
+                            <tbody v-if="isEventLoading" class="placeholder-glow">
+                                <tr v-for="n in 5" :key="'home-skeleton-' + n">
+                                    <td><span class="placeholder col-9 bg-secondary opacity-25"></span></td>
+                                    <td><span class="placeholder col-6 bg-secondary opacity-25"></span></td>
+                                    <td>
+                                        <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
+                                        <span class="placeholder col-5 bg-secondary opacity-25 d-block"></span>
+                                    </td>
+                                    <td><span class="placeholder col-5 bg-secondary opacity-25"></span></td>
+                                </tr>
+                            </tbody>
+
+                            <tbody v-else>
+                                <tr v-for="event in homeEvents" :key="event.id">
+                                    <td>{{ event.date }}</td>
+                                    <td>
+                                        <span class="badge bg-dark" v-if="event.category === 'live'">🎤 舞台</span>
+                                        <span class="badge bg-secondary text-dark"
+                                            v-else-if="event.category === 'cheki'">📸 特典</span>
+                                        <span class="badge bg-warning text-dark" v-else>🌱 Off會</span>
+                                    </td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
+                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td>
+                                        <span
+                                            :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
+                                            event.status }}</span>
+                                    </td>
+                                </tr>
+                                <tr v-if="homeEvents.length === 0">
+                                    <td colspan="4" class="text-muted text-center py-3">暫無近期行程</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="mb-5" v-if="currentTab === 'live'">
+                    <h3 class="section-title mb-3">🎤 舞台出演 全列表 ▼</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-live'">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 60%">活動名稱 / 地點</th>
+                                    <th style="width: 15%">狀態</th>
+                                </tr>
+                            </thead>
+
+                            <tbody v-if="isEventLoading" class="placeholder-glow">
+                                <tr v-for="n in 4" :key="'live-skeleton-' + n">
+                                    <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
+                                    <td>
+                                        <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
+                                        <span class="placeholder col-4 bg-secondary opacity-25 d-block"></span>
+                                    </td>
+                                    <td><span class="placeholder col-5 bg-secondary opacity-25"></span></td>
+                                </tr>
+                            </tbody>
+
+                            <tbody v-else>
+                                <tr v-for="event in liveEvents" :key="event.id">
+                                    <td>{{ event.date }}</td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
+                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td>
+                                        <span
+                                            :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
+                                            event.status }}</span>
+                                    </td>
+                                </tr>
+                                <tr v-if="liveEvents.length === 0">
+                                    <td colspan="3" class="text-muted text-center py-3">暫無舞台演出行程</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="mb-5" v-if="currentTab === 'cheki'">
+                    <h3 class="section-title mb-3">📸 特典會 全列表 ▼</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-cheki'">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 60%">活動名稱 / 地點</th>
+                                    <th style="width: 15%">狀態</th>
+                                </tr>
+                            </thead>
+
+                            <tbody v-if="isEventLoading" class="placeholder-glow">
+                                <tr v-for="n in 4" :key="'cheki-skeleton-' + n">
+                                    <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
+                                    <td>
+                                        <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
+                                        <span class="placeholder col-4 bg-secondary opacity-25 d-block"></span>
+                                    </td>
+                                    <td><span class="placeholder col-5 bg-secondary opacity-25"></span></td>
+                                </tr>
+                            </tbody>
+
+                            <tbody v-else>
+                                <tr v-for="event in chekiEvents" :key="event.id">
+                                    <td>{{ event.date }}</td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
+                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td>
+                                        <span
+                                            :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
+                                            event.status }}</span>
+                                    </td>
+                                </tr>
+                                <tr v-if="chekiEvents.length === 0">
+                                    <td colspan="3" class="text-muted text-center py-3">暫無特典會行程</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="mb-5" v-if="currentTab === 'off'">
+                    <h3 class="section-title mb-3">🌱 Off 會 ▼</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-off'">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 60%">活動名稱 / 地點</th>
+                                    <th style="width: 15%">狀態</th>
+                                </tr>
+                            </thead>
+
+                            <tbody v-if="isEventLoading" class="placeholder-glow">
+                                <tr v-for="n in 2" :key="'off-skeleton-' + n">
+                                    <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
+                                    <td>
+                                        <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
+                                        <span class="placeholder col-4 bg-secondary opacity-25 d-block"></span>
+                                    </td>
+                                    <td><span class="placeholder col-5 bg-secondary opacity-25"></span></td>
+                                </tr>
+                            </tbody>
+
+                            <tbody v-else>
+                                <tr v-for="event in offEvents" :key="event.id">
+                                    <td>{{ event.date }}</td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
+                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td>
+                                        <span
+                                            :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
+                                            event.status }}</span>
+                                    </td>
+                                </tr>
+                                <tr v-if="offEvents.length === 0">
+                                    <td colspan="3" class="text-muted text-center py-3">暫無 Off 會行程</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!--物販區主內容 -->
+                <section class="mb-5" v-if="currentTab === 'goods'">
+                    <div class="modal-body" style="background-color: var(--card-bg);">
+                        <!-- 直接展示這張圖片，讓粉絲一目瞭然 -->
+                        <img src="image_3dc7e6.jpg" class="img-fluid rounded mb-3" alt="物販資訊">
+                        <ul class="text-muted small">
+                            <li>【物販資訊】</li>
+                            <li>🌿拍立得券 250元</li>
+                            <li>🌱手機券 200元 (可兌換手機拍 / 15秒影片)</li>
+                            <li>以上均含交流時間90秒，單次至多可使用2張券</li>
+                            <li>如有重大失誤，重拍以一次為限 (以工作人員認定為主)</li>
+                            <li>※指名/單筆消費物販券滿1000元，贈送百合券1張</li>
+                            <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                            <li>【百合券兌換方式】</li>
+                            <li>1張 手機拍</li>
+                            <li>2張 15秒影片</li>
+                            <li>3張 拍立得(白拍，不含簽繪及交流)</li>
+                            <li>4張 拍立得(含簽繪及交流)</li>
+                            <li>5張 私物簽名</li>
+                            <li>10張 紀念簽名板</li>
+                            <li>20張 指定歌曲cover舞蹈影片 or 錄音檔 (30秒內)</li>
+                            <li>30張 手寫信 / 通話15分鐘 / 視訊10分鐘</li>
+                            <li>40張 指定歌曲cover舞蹈影片 or 錄音檔 (5分鐘內)</li>
+                            <li>50張 挑選禮物 / 手作禮物 / 專屬訂製周邊1份</li>
+                            <li>60張 指定cover曲 / 風格 / 衣裝 演出1場</li>
+                            <li>100張 日k 2小時</li>
+                            <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                        </ul>
+
+                        <hr>
+
+                        <!-- 在下方補充文字版規則，讓規則更明確 -->
+                        <h6 style="color: var(--section-title);">⚠️ 現場應援與物販守則</h6>
+                        <ul class="text-muted small">
+                            <li>請勿主動觸碰成員之身體、衣物及裝飾配件。</li>
+                            <li>物販時間若有脫序行為，工作人員有權請離。</li>
+                            <li>禮品請於物販時間交由工作人員統一收取。</li>
+                            <li>若有拍照重拍需求，請當場向工作人員反應，重拍以一次為限。</li>
+                            <li>兌換20張以上品項前，請務必事先與營運溝通。</li>
+                            <li>演出時段是否開放攝影，以活動主辦單位公告為主。</li>
+                            <li>拍攝任何照片、影片需將檔案私訊「優芽 yuume」粉絲專頁進行審核。</li>
+                            <li>※ 審核通過之照片、影片須標記「#官方審核通過」後，方可自由發佈及分享，未通過之照片及影片，請勿以任何形式公開。</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 相簿區主內容 -->
+                <section class="mb-5" v-if="currentTab === 'gallery'">
+                    <h3 class="section-title mb-3">📸 相簿 ▼</h3>
+                    <p class="text-muted small">
+                        ※ 本區相片皆經過 WebP 高清壓縮，享受頂級 CDN 秒開體驗。
+                        <span class="text-success fw-bold" v-if="currentGallery !== 'all'">（目前篩選：{{ currentGallery
+                            }}）</span>
+                        <a href="#" v-if="currentGallery !== 'all'" @click.prevent="selectGallery('all')"
+                            class="ms-2 text-decoration-none">[↩ 返回列表]</a>
+                    </p>
+
+                    <div v-if="isPhotosLoading" class="text-center py-5">
+                        <div class="spinner-border text-success" role="status"></div>
+                        <p>載入中...</p>
+                    </div>
+
+                    <div v-else-if="photos.length === 0 && currentGallery !== 'all'"
+                        class="text-center py-5 text-muted">
+                        目前此分類還沒有照片喔！
+                    </div>
+
+                    <div class="gallery-container">
+                        <template v-if="currentGallery === 'all'">
+                            <div v-for="album in featuredAlbums" :key="album.category_id" class="gallery-item"
+                                @click="selectGalleryById(album.category_id)">
+                                <div class="card border-0 shadow-sm info-card" style="cursor: pointer;">
+                                    <img :src="album.image_url" class="gallery-img" alt="封面">
+                                    <div class="p-2 text-center small text-muted fw-bold text-truncate">
+                                        {{ album.category_name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template v-else>
+                            <div v-for="photo in photos" :key="photo.id" class="gallery-item">
+                                <div class="gallery-card shadow-sm">
+                                    <a :href="photo.image_url" data-fslightbox="gallery">
+                                        <img :src="photo.image_url" class="gallery-img" alt="照片">
+                                    </a>
+                                    <div class="p-2 text-center small text-muted fw-bold">
+                                        {{ photo.created_at ? photo.created_at.substring(0, 10) : '近期照片' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 💡 1. 引入 Bootstrap 5 Bundle JS (內含 Popper，Dropdown 功能不可或缺) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 2. 引入 Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+
+
+    <script>
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    memberName: '載入中...',
+                    birthday: '06月09日',
+                    nickname: '芽芽 ゆうめちゃん',
+                    supportColor: '百合綠',
+                    likes: '奶茶、舞台、狗狗、鑑賞、小倉唯、內心可愛的人💚',
+                    dislikes: '唱低音、背歌詞、蟲',
+                    fbUrl: 'https://www.facebook.com/yuume.aoba',
+                    fbFanpageUrl: 'https://www.facebook.com/yuume.fanpage',
+                    igUrl: 'https://www.instagram.com/yuume.aoba',
+                    xUrl: 'https://x.com/yuume_aoba',
+                    ytUrl: 'https://www.youtube.com/@yuume-aoba',
+                    blogUrl: 'https://yuume-aoba.blogspot.com/',
+                    shopUrl: 'https://myship.7-11.com.tw/general/detail/GM2410024418820',
+                    currentTime: '',
+                    lastUpdateTime: '2026年06月23日 15:05',
+                    currentTab: 'home',
+                    currentGallery: 'all',
+                    photos: [],
+                    isPhotosLoading: false,
+                    albumCategories: [],
+                    isCategoryLoading: true,
+                    events: [],
+                    isEventLoading: true,
+                    isDarkMode: false
+                }
+            },
+            computed: {
+                latestEventsGroup() {
+                    if (!this.events || this.events.length === 0) return [];
+                    const latestDate = this.events[0].date;
+                    return this.events.filter(event => event.date === latestDate);
+                },
+                homeEvents() { return this.events ? this.events.slice(0, 10) : []; },
+                liveEvents() { return this.events ? this.events.filter(e => e.category === 'live') : []; },
+                chekiEvents() { return this.events ? this.events.filter(e => e.category === 'cheki') : []; },
+                offEvents() { return this.events ? this.events.filter(e => e.category === 'off') : []; },
+                featuredAlbums() {
+                    if (!this.photos || this.photos.length === 0 || !this.albumCategories) return [];
+                    const map = new Map();
+                    this.photos.forEach(photo => {
+                        if (!map.has(photo.category_id)) {
+                            const cat = this.albumCategories.find(c => c.id == photo.category_id);
+                            map.set(photo.category_id, { ...photo, category_name: cat ? cat.name : '未知活動' });
+                        }
+                    });
+                    return Array.from(map.values());
+                }
+            },
+            mounted() {
+                this.initTheme();
+                this.fetchMemberData();
+                this.fetchEventData();
+                this.fetchAlbumCategories();
+                this.updateClock();
+                setInterval(this.updateClock, 1000);
+                this.selectGallery('all');
+                // 延遲一點點確保所有資源(包含 Lightbox)都到位
+                setTimeout(() => {
+                    if (typeof refreshFsLightbox === "function") {
+                        refreshFsLightbox();
+                    }
+                }, 500);
+            },
+            methods: {
+                initTheme() {
+                    const savedTheme = localStorage.getItem('theme') || 'light';
+                    this.isDarkMode = (savedTheme === 'dark');
+                    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                },
+                toggleTheme() {
+                    this.isDarkMode = !this.isDarkMode;
+                    const newTheme = this.isDarkMode ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                },
+                async fetchAlbumCategories() {
+                    this.isCategoryLoading = true;
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/api/album-categories');
+                        this.albumCategories = await response.json();
+                    } catch (error) { console.error("分類載入錯誤:", error); }
+                    finally { this.isCategoryLoading = false; }
+                },
+                async selectGallery(folderName) {
+                    this.currentTab = 'gallery';
+                    this.currentGallery = folderName;
+                    this.isPhotosLoading = true;
+
+                    try {
+                        const response = await fetch(`http://127.0.0.1:8000/api/photos-by-category/${folderName}`);
+                        this.photos = await response.json();
+
+                        // 核心修改：渲染完後強制 fslightbox 重新掃描
+                        this.$nextTick(() => {
+                            if (typeof refreshFsLightbox === "function") {
+                                refreshFsLightbox();
+                            }
+                        });
+                    } catch (error) {
+                        console.error("載入分類照片失敗:", error);
+                    } finally {
+                        this.isPhotosLoading = false;
+                    }
+                },
+                selectGalleryById(categoryId) {
+                    const category = this.albumCategories.find(c => c.id === categoryId);
+                    if (category) this.selectGallery(category.folder_slug);
+                },
+                async fetchMemberData() {
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/api/member/1');
+                        const data = await response.json();
+                        if (data) this.memberName = data.name_tw || '優芽 Yuume';
+                    } catch (error) { this.memberName = '優芽 Yuume'; }
+                },
+                async fetchEventData() {
+                    this.isEventLoading = true;
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/api/events');
+                        const data = await response.json();
+                        this.events = data.map(item => ({
+                            id: item.id,
+                            date: item.event_date,
+                            title: item.title,
+                            note: item.location,
+                            category: item.category || 'live',
+                            status: item.status || '販售中'
+                        }));
+                    } catch (error) { console.error("活動載入錯誤:", error); }
+                    finally { this.isEventLoading = false; }
+                },
+                updateClock() {
+                    const now = new Date();
+                    this.currentTime = now.toLocaleTimeString();
+                }
+            }
+        }).mount('#app');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
+</body>
+
+</html>
