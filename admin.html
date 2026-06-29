@@ -35,7 +35,7 @@
       <div class="card-header bg-dark text-white p-3">
   <h5 class="mb-0 d-inline-block">🚀 新增活動行程</h5>
   <div class="float-end">
-    <a href="./upload.html" class="btn btn-sm btn-outline-warning me-2">圖片後台 📸</a>
+    <a href="./admin_photo.html" class="btn btn-sm btn-outline-warning me-2">圖片後台 📸</a>
     <a href="./index.html" class="btn btn-sm btn-outline-light">回首頁 🏠</a>
   </div>
 </div>
@@ -82,7 +82,7 @@
           </div>
 
           <button type="submit" class="btn btn-success w-100 fw-bold py-2" :disabled="isSubmitting">
-            {{ isSubmitting ? '正在寫入資料庫...' : '🚀 一鍵寫入 MySQL 資料庫' }}
+            {{ isSubmitting ? '正在寫入資料庫...' : '🚀 一鍵寫入 Supabase 資料庫' }}
           </button>
         </form>
       </div>
@@ -105,7 +105,7 @@
             </thead>
             <tbody>
               <tr v-for="event in events" :key="event.id">
-                <td class="fw-bold">{{ event.date }}</td>
+                <td class="fw-bold">{{ event.event_date }}</td>
                 <td>
                   <span class="badge bg-dark" v-if="event.category === 'live'">🎤 舞台出演</span>
                   <span class="badge bg-secondary text-dark" v-else-if="event.category === 'cheki'">📸 特典會</span>
@@ -138,7 +138,8 @@
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  
+  <script src="./js/admin-config.js"></script>
+
 <script>
   const { createApp } = Vue;
 
@@ -152,57 +153,35 @@
       }
     },
     async mounted() {
-      // 從 localStorage 獲取 token
-      const token = localStorage.getItem('admin_token');
-      
-      try {
-        const checkRes = await fetch('http://127.0.0.1:8000/api/check-auth', {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        
-        // 驗證失敗時，跳出提示框並跳轉
-        if (!checkRes.ok) {
-          alert('⚠️ 尚未登入或登入已過期，請先前往登入頁面。');
-          window.location.href = 'login.html';
-          return;
-        }
-        
-        // 驗證成功，繼續載入資料
-        this.fetchExistingLocations();
-        this.fetchEventData();
-      } catch (error) {
-        // 發生連線錯誤時也視同未登入
-        alert('⚠️ 系統連線異常，請重新登入。');
-        window.location.href = 'login.html';
+      const isAuthed = await checkAdminAuth();
+      if (!isAuthed) {
+        redirectToLogin('⚠️ 尚未登入或登入已過期，請先前往登入頁面。');
+        return;
       }
+
+      this.fetchExistingLocations();
+      this.fetchEventData();
     },
     methods: {
-      getHeaders() {
-        return {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-        };
-      },
       async fetchEventData() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/events');
+          const response = await fetch(`${API_BASE}/events`);
           const data = await response.json();
-          this.events = data.map(item => ({ ...item }));
+          this.events = Array.isArray(data) ? data : [];
         } catch (error) { console.error(error); }
       },
       async fetchExistingLocations() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/locations');
+          const response = await fetch(`${API_BASE}/locations`);
           if (response.ok) this.existingLocations = await response.json();
         } catch (error) { console.error(error); }
       },
       async submitNewEvent() {
         this.isSubmitting = true;
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/events', {
+          const response = await fetch(`${API_BASE}/events`, {
             method: 'POST',
-            headers: this.getHeaders(),
+            headers: getAuthHeaders(),
             body: JSON.stringify(this.form)
           });
 
@@ -211,20 +190,23 @@
             this.fetchEventData();
             this.form = { title: '', event_date: '', category: 'live', status: '販售中', location: '' };
           } else {
-            alert('權限不足或輸入錯誤');
+            const result = await response.json().catch(() => ({}));
+            alert(result.message || '權限不足或輸入錯誤');
           }
         } finally { this.isSubmitting = false; }
       },
       async deleteEvent(id, title) {
         if (!confirm(`⚠️ 確定要刪除「${title}」嗎？`)) return;
         try {
-          const response = await fetch(`http://127.0.0.1:8000/api/events/${id}`, {
+          const response = await fetch(`${API_BASE}/events/${id}`, {
             method: 'DELETE',
-            headers: this.getHeaders()
+            headers: getAuthHeaders()
           });
           if (response.ok) {
             alert('🗑️ 刪除成功');
             this.fetchEventData();
+          } else {
+            alert('刪除失敗');
           }
         } catch (error) { alert('刪除失敗'); }
       }

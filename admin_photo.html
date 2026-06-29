@@ -93,7 +93,7 @@
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="./js/admin-config.js"></script>
   <script>
     const { createApp } = Vue
 
@@ -113,38 +113,18 @@
         }
       },
       async mounted() {
-        // 🛡️ 登入驗證機制
-        const token = localStorage.getItem('admin_token');
-        try {
-          const checkRes = await fetch('http://127.0.0.1:8000/api/check-auth', {
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-          
-          if (!checkRes.ok) {
-            alert('⚠️ 請先登入管理員帳號');
-            window.location.href = 'login.html';
-            return;
-          }
-          this.fetchCategories();
-        } catch (error) {
-          window.location.href = 'login.html';
+        const isAuthed = await checkAdminAuth();
+        if (!isAuthed) {
+          redirectToLogin('⚠️ 請先登入管理員帳號');
+          return;
         }
+        this.fetchCategories();
       },
       methods: {
-        // 封裝 Header 獲取方式
-        getHeaders() {
-          return {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-          };
-        },
-
         async fetchCategories() {
           this.isCategoryLoading = true;
           try {
-            const response = await fetch('http://127.0.0.1:8000/api/album-categories', {
-              headers: this.getHeaders()
-            });
+            const response = await fetch(`${API_BASE}/album-categories`);
             if (response.ok) this.categories = await response.json();
           } catch (error) {
             console.error("抓取分類發生錯誤:", error);
@@ -160,12 +140,9 @@
           if (!slug) return;
 
           try {
-            const response = await fetch('http://127.0.0.1:8000/api/album-categories', {
+            const response = await fetch(`${API_BASE}/album-categories`, {
               method: 'POST',
-              headers: { 
-                ...this.getHeaders(),
-                'Content-Type': 'application/json' 
-              },
+              headers: getAuthHeaders(),
               body: JSON.stringify({ name: name, folder_slug: slug })
             });
 
@@ -211,9 +188,9 @@
             formData.append('category_id', this.selectedCategoryId);
 
             try {
-              const response = await fetch('http://127.0.0.1:8000/api/photos/batch-upload', {
+              const response = await fetch(`${API_BASE}/photos/batch-upload`, {
                 method: 'POST',
-                headers: this.getHeaders(), // 🛡️ 加入 Token 驗證
+                headers: getAuthHeaders(false),
                 body: formData
               });
 
