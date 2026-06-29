@@ -83,7 +83,7 @@
         /* 其餘排版樣式 */
         .background-container {
             background-color: var(--bg-main);
-            min-height: 100vh;
+            min-height: 900vh;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             transition: background-color 0.3s ease;
         }
@@ -100,12 +100,12 @@
                 position: fixed;
                 left: 0;
                 top: 0;
-                height: 100vh;
+                height: 900vh;
                 overflow-y: auto;
             }
 
             .main-content-scroll {
-                height: 100vh;
+                height: 900vh;
                 display: flex;
                 flex-direction: column;
                 overflow-y: auto;
@@ -225,7 +225,7 @@
 
             <div class="col-12 col-md-4 member-sidebar d-flex flex-column align-items-center p-4">
 
-                <div class="profile-card p-3 mb-4">
+                <div class="profile-card p-3 mb-2">
                     <div class="text-center">
                         <img src="https://picsum.photos/250/300" alt="公式照" class="img-fluid rounded shadow mb-3"
                             style="max-height: 180px; object-fit: cover;" />
@@ -233,7 +233,7 @@
                         <p class="text-muted small mb-3">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
                     </div>
 
-                    <div class="intro-poem text-center border-top border-bottom py-3 my-3"
+                    <div class="intro-poem text-center border-top border-bottom py-2 my-2"
                         style="border-color: var(--card-border) !important;">
                         <p>如新芽般青翠</p>
                         <p>如枝條般優雅</p>
@@ -289,7 +289,7 @@
                     </div>
                 </div>
 
-                <div class="nav-buttons w-100 px-1 d-flex flex-column gap-2 mb-4">
+                <div class="nav-buttons w-100 px-1 d-flex flex-column gap-2 mb-2">
                     <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
                         :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
                     <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
