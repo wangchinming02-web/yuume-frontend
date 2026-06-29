@@ -80,21 +80,108 @@
             background-color: #4a7c59;
         }
 
+        html {
+            font-size: 18px;
+        }
+
         /* 其餘排版樣式 */
         .background-container {
             background-color: var(--bg-main);
             min-height: 100vh;
             font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
             transition: background-color 0.3s ease;
+        }
+
+        .main-content-scroll {
+            font-size: 1.35rem;
+        }
+
+        .custom-table {
+            font-size: 1.3rem;
+        }
+
+        .main-content-scroll .info-card {
+            font-size: 1.3rem;
         }
 
         .member-sidebar {
             background: var(--sidebar-bg);
             border-right: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 1000;
+            font-size: 1rem;
             transition: background 0.3s ease;
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        .member-sidebar .intro-poem p {
+            font-size: 0.95rem;
+        }
+
+        .member-sidebar .nav-buttons .btn {
+            font-size: 0.95rem;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .member-sidebar .profile-name {
+            font-size: 1.35rem;
+        }
+
+        .member-sidebar .profile-promo-wrap {
+            width: 100%;
+            margin-bottom: 0.75rem;
+            line-height: 0;
+        }
+
+        .member-sidebar .profile-promo-img {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+            object-position: center;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .sidebar-scroll-area {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+
+        .sidebar-bottom-area {
+            flex: 0 0 auto;
+            width: 100%;
+            padding-top: 0.5rem;
+        }
+
+        .member-sidebar .time-info-block {
+            font-size: 0.85rem;
+            padding: 0.65rem !important;
+        }
+
+        .member-sidebar .gallery-dropup {
+            position: relative;
+        }
+
+        .member-sidebar .gallery-dropup .dropdown-menu {
+            position: absolute;
+            bottom: 100%;
+            top: auto !important;
+            left: 0;
+            right: 0;
+            margin-bottom: 0.35rem;
+            z-index: 1100;
+            max-height: 50vh;
+            overflow-y: auto;
+            box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .member-sidebar .gallery-dropup .dropdown-menu::-webkit-scrollbar {
+            display: none;
         }
 
         .member-sidebar::-webkit-scrollbar {
@@ -104,6 +191,10 @@
         }
 
         @media (max-width: 767.98px) {
+            .member-sidebar {
+                max-width: none;
+            }
+
             .main-content-scroll {
                 margin-left: 0;
                 width: 100%;
@@ -116,18 +207,28 @@
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 33.333333%;
+                width: 42%;
+                max-width: 540px;
                 height: 100vh;
-                overflow-y: hidden;
+                overflow-y: auto;
                 display: flex;
                 flex-direction: column;
+                align-items: stretch;
+                padding: 0.85rem !important;
             }
 
             .main-content-scroll {
-                margin-left: 33.333333%;
-                width: 66.666667%;
-                max-width: 66.666667%;
+                margin-left: 42%;
+                width: 58%;
+                max-width: none;
                 min-height: 100vh;
+            }
+        }
+
+        @media (min-width: 1286px) {
+            .main-content-scroll {
+                margin-left: 540px;
+                width: calc(100% - 540px);
             }
         }
 
@@ -147,7 +248,6 @@
 
         .intro-poem p {
             margin-bottom: 6px;
-            font-size: 0.9rem;
             color: var(--poem-text);
         }
 
@@ -195,7 +295,7 @@
 
         /* 其他輔助樣式 */
         .section-title {
-            font-size: 1.3rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--section-title);
             border-bottom: 2px solid var(--section-border);
@@ -290,17 +390,20 @@
 
         <div class="row g-0">
 
-            <div class="col-12 member-sidebar d-flex flex-column align-items-center p-4">
+            <div class="col-12 member-sidebar d-flex flex-column p-3 p-md-4">
 
-                <div class="profile-card p-3 mb-4">
+                <div class="sidebar-scroll-area">
+                <div class="profile-promo-wrap">
+                    <img src="images/優芽宣傳圖(橫).png" alt="優芽宣傳圖"
+                        class="img-fluid rounded shadow profile-promo-img" />
+                </div>
+                <div class="profile-card p-3 mb-2">
                     <div class="text-center">
-                        <img src="https://picsum.photos/250/300" alt="公式照" class="img-fluid rounded shadow mb-3"
-                            style="max-height: 180px; object-fit: cover;" />
-                        <h2 class="fw-bold mb-1 text-dark fs-4">{{ memberName }}</h2>
-                        <p class="text-muted small mb-3">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
+                        <h2 class="fw-bold mb-1 text-dark profile-name">{{ memberName }}</h2>
+                        <p class="text-muted mb-2">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
                     </div>
 
-                    <div class="intro-poem text-center border-top border-bottom py-3 my-3"
+                    <div class="intro-poem text-center border-top border-bottom py-2 my-2"
                         style="border-color: var(--card-border) !important;">
                         <p>如新芽般青翠</p>
                         <p>如枝條般優雅</p>
@@ -310,7 +413,7 @@
                         <p class="mb-0">透過演出給予大家溫柔的力量</p>
                     </div>
 
-                    <div class="small lh-base mb-3" style="font-size: 0.85rem;">
+                    <div class="lh-base mb-3">
                         <p class="mb-1 text-dark"><strong>暱稱：</strong>{{ nickname }}</p>
                         <p class="mb-2 text-dark"><strong>代表顏色：</strong>{{ supportColor }} <span class="badge"
                                 style="background-color: #77dd77; padding: 2px 4px;">🌱</span></p>
@@ -326,8 +429,8 @@
                         </div>
 
                         <div class="p-2 rounded bg-light border-start border-success border-3">
-                            <div class="fw-bold text-dark mb-1" style="font-size: 0.8rem;">📌 座右銘</div>
-                            <div class="text-muted font-monospace" style="font-size: 0.75rem;">
+                            <div class="fw-bold text-dark mb-1">📌 座右銘</div>
+                            <div class="text-muted font-monospace" style="font-size: 0.92rem;">
                                 <div>• 愛拼才會芽💪🏻🌱</div>
                                 <div>• 睡眠是人生的還原劑💤</div>
                             </div>
@@ -355,34 +458,36 @@
                         </a>
                     </div>
                 </div>
+                </div>
 
-                <div class="nav-buttons w-100 px-1 d-flex flex-column gap-2 mb-4">
-                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                <div class="sidebar-bottom-area">
+                <div class="nav-buttons w-100 px-1 d-flex flex-column gap-1 mb-2">
+                    <button class="btn btn-outline-secondary w-100 rounded-pill"
                         :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
-                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                    <button class="btn btn-outline-secondary w-100 rounded-pill"
                         :class="{ active: currentTab === 'live' }" @click="currentTab = 'live'">🎤 舞台出演行程</button>
-                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                    <button class="btn btn-outline-secondary w-100 rounded-pill"
                         :class="{ active: currentTab === 'cheki' }" @click="currentTab = 'cheki'">📸 特典會行程</button>
-                    <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill"
+                    <button class="btn btn-outline-secondary w-100 rounded-pill"
                         :class="{ active: currentTab === 'off' }" @click="currentTab = 'off'">🌱 Off 會 </button>
 
                     <!-- 🆕 新增：物販與須知按鈕 -->
-                    <button class="btn btn-outline-success w-100 py-1.5 small rounded-pill"
+                    <button class="btn btn-outline-success w-100 rounded-pill"
                         :class="{ active: currentTab === 'goods' }" @click="currentTab = 'goods'">
                         🛒 物販與應援須知
                     </button>
 
-                    <!-- 原有的相簿 Dropdown -->
-                    <div class="dropdown w-100">
-                        <button class="btn btn-outline-secondary w-100 py-1.5 small rounded-pill dropdown-toggle"
+                    <!-- 相簿 Dropdown：向上展開遮住上方按鈕 -->
+                    <div class="dropup gallery-dropup w-100">
+                        <button class="btn btn-outline-secondary w-100 rounded-pill dropdown-toggle"
                             :class="{ active: currentTab === 'gallery' }" type="button" id="galleryDropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                            data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                             📸 相簿(管理者自肥)
                         </button>
-                        <ul class="dropdown-menu w-100 rounded-3 shadow border-0 mt-1" aria-labelledby="galleryDropdown"
+                        <ul class="dropdown-menu w-100 rounded-3 shadow border-0" aria-labelledby="galleryDropdown"
                             style="background-color: var(--card-bg);">
                             <li>
-                                <a class="dropdown-content-link text-start ps-3 py-2 d-block small text-decoration-none text-dark fw-bold"
+                                <a class="dropdown-content-link text-start ps-3 py-2 d-block text-decoration-none text-dark fw-bold"
                                     href="#" @click.prevent="selectGallery('all')">
                                     🖼️ 顯示全部相簿
                                 </a>
@@ -390,9 +495,9 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li v-if="isCategoryLoading" class="text-center py-2 text-muted small">載入分類中...</li>
+                            <li v-if="isCategoryLoading" class="text-center py-2 text-muted">載入分類中...</li>
                             <li v-else v-for="category in albumCategories" :key="category.id">
-                                <a class="dropdown-content-link text-start ps-3 py-2 d-block small text-decoration-none text-muted"
+                                <a class="dropdown-content-link text-start ps-3 py-2 d-block text-decoration-none text-muted"
                                     href="#" @click.prevent="selectGallery(category.folder_slug)">
                                     📁 {{ category.name }}
                                 </a>
@@ -400,12 +505,13 @@
                         </ul>
                     </div>
                 </div>
-                <div class="time-info-block p-3 rounded text-center font-monospace lh-sm mt-3 mt-md-auto shadow-sm">
+                <div class="time-info-block p-2 rounded text-center font-monospace lh-sm shadow-sm">
                     <div>🕒 現在時間：<span class="fw-bold text-dark">{{ currentTime }}</span>
                     </div>
                     <div>🔄 最後更新：<span class="text-muted">{{ lastUpdateTime
                             }}</span></div>
                     <div><span class="text-dark">管理者:發芽的白學家/臭執著仔</span></div>
+                </div>
                 </div>
             </div>
 
@@ -440,9 +546,9 @@
                                 特典會</span>
                             <span class="badge bg-warning text-dark fw-bold" v-else>🌱 Off 會</span>
                         </div>
-                        <h5 class="mb-1 text-dark" style="font-size: 1.1rem;">{{ event.title }}</h5>
-                        <p class="text-muted mb-0 small">日期：{{ event.date }}</p>
-                        <p class="text-muted mb-0" v-if="event.note"><small>地點：{{ event.note }}</small></p>
+                        <h5 class="mb-1 text-dark" style="font-size: 1.35rem;">{{ event.title }}</h5>
+                        <p class="text-muted mb-0">日期：{{ event.date }}</p>
+                        <p class="text-muted mb-0" v-if="event.note">地點：{{ event.note }}</p>
                     </div>
                 </section>
 
@@ -481,8 +587,7 @@
                                             v-else-if="event.category === 'cheki'">📸 特典</span>
                                         <span class="badge bg-warning text-dark" v-else>🌱 Off會</span>
                                     </td>
-                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
-                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
                                         <span
                                             :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
@@ -523,8 +628,7 @@
                             <tbody v-else>
                                 <tr v-for="event in liveEvents" :key="event.id">
                                     <td>{{ event.date }}</td>
-                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
-                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
                                         <span
                                             :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
@@ -565,8 +669,7 @@
                             <tbody v-else>
                                 <tr v-for="event in chekiEvents" :key="event.id">
                                     <td>{{ event.date }}</td>
-                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
-                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
                                         <span
                                             :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
@@ -607,8 +710,7 @@
                             <tbody v-else>
                                 <tr v-for="event in offEvents" :key="event.id">
                                     <td>{{ event.date }}</td>
-                                    <td><strong class="text-dark">{{ event.title }}</strong><br><small
-                                            class="text-muted">📍 {{ event.note }}</small></td>
+                                    <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
                                         <span
                                             :class="['fw-bold', event.status === '已結束' ? 'text-secondary' : 'text-danger']">{{
@@ -631,7 +733,7 @@
                                 <img src="images/物販資訊.png" class="img-fluid rounded" alt="物販資訊">
                             </div>
                             <div class="goods-text-col">
-                                <ul class="text-muted small mb-0">
+                                <ul class="text-muted mb-0">
                                     <li>【物販資訊】</li>
                                     <li>🌿拍立得券 250元</li>
                                     <li>🌱手機券 200元 (可兌換手機拍 / 15秒影片)</li>
@@ -658,7 +760,7 @@
                                 <hr>
 
                                 <h6 style="color: var(--section-title);">⚠️ 現場應援與物販守則</h6>
-                                <ul class="text-muted small mb-0">
+                                <ul class="text-muted mb-0">
                                     <li>請勿主動觸碰成員之身體、衣物及裝飾配件。</li>
                                     <li>物販時間若有脫序行為，工作人員有權請離。</li>
                                     <li>禮品請於物販時間交由工作人員統一收取。</li>
@@ -675,13 +777,11 @@
 
                 <!-- 相簿區主內容 -->
                 <section class="mb-5" v-if="currentTab === 'gallery'">
-                    <h3 class="section-title mb-3">📸 相簿 ▼</h3>
-                    <p class="text-muted small">
+                    <h3 class="section-title mb-3">📸 {{ currentAlbumTitle }}</h3>
+                    <p class="text-muted">
                         ※ 本區相片皆經過 WebP 高清壓縮，享受頂級 CDN 秒開體驗。
-                        <span class="text-success fw-bold" v-if="currentGallery !== 'all'">（目前篩選：{{ currentGallery
-                            }}）</span>
                         <a href="#" v-if="currentGallery !== 'all'" @click.prevent="selectGallery('all')"
-                            class="ms-2 text-decoration-none">[↩ 返回列表]</a>
+                            class="ms-2 text-decoration-none">[↩ 返回全部相簿]</a>
                     </p>
 
                     <div v-if="isPhotosLoading" class="text-center py-5">
@@ -689,18 +789,23 @@
                         <p>載入中...</p>
                     </div>
 
-                    <div v-else-if="photos.length === 0 && currentGallery !== 'all'"
+                    <div v-else-if="currentGallery === 'all' && featuredAlbums.length === 0"
+                        class="text-center py-5 text-muted">
+                        尚無相簿資料，請稍後再試。
+                    </div>
+
+                    <div v-else-if="currentGallery !== 'all' && photos.length === 0"
                         class="text-center py-5 text-muted">
                         目前此分類還沒有照片喔！
                     </div>
 
-                    <div class="gallery-container">
+                    <div v-else class="gallery-container">
                         <template v-if="currentGallery === 'all'">
                             <div v-for="album in featuredAlbums" :key="album.category_id" class="gallery-item"
                                 @click="selectGalleryById(album.category_id)">
                                 <div class="card border-0 shadow-sm info-card" style="cursor: pointer;">
                                     <img :src="album.path" class="gallery-img" alt="封面">
-                                    <div class="p-2 text-center small text-muted fw-bold text-truncate">
+                                    <div class="p-2 text-center text-dark fw-bold">
                                         {{ album.category_name }}
                                     </div>
                                 </div>
@@ -713,7 +818,7 @@
                                     <a :href="photo.path" data-fslightbox="gallery">
                                         <img :src="photo.path" class="gallery-img" alt="照片">
                                     </a>
-                                    <div class="p-2 text-center small text-muted fw-bold">
+                                    <div class="p-2 text-center text-muted fw-bold">
                                         {{ photo.created_at ? photo.created_at.substring(0, 10) : '近期照片' }}
                                     </div>
                                 </div>
@@ -780,22 +885,30 @@
                 chekiEvents() { return this.events ? this.events.filter(e => e.category === 'cheki') : []; },
                 offEvents() { return this.events ? this.events.filter(e => e.category === 'off') : []; },
                 featuredAlbums() {
-                    if (!this.photos || this.photos.length === 0 || !this.albumCategories) return [];
+                    if (!this.photos || this.photos.length === 0) return [];
                     const map = new Map();
                     this.photos.forEach(photo => {
                         if (!map.has(photo.category_id)) {
                             const cat = this.albumCategories.find(c => c.id == photo.category_id);
-                            map.set(photo.category_id, { ...photo, category_name: cat ? cat.name : '未知活動' });
+                            map.set(photo.category_id, {
+                                ...photo,
+                                category_name: cat ? cat.name : '載入中...'
+                            });
                         }
                     });
                     return Array.from(map.values());
+                },
+                currentAlbumTitle() {
+                    if (this.currentGallery === 'all') return '全部相簿';
+                    const cat = this.albumCategories.find(c => c.folder_slug === this.currentGallery);
+                    return cat ? cat.name : this.currentGallery;
                 }
             },
             mounted() {
                 this.initTheme();
                 this.fetchMemberData();
                 this.fetchEventData();
-                this.fetchAlbumCategories();
+                this.initGalleryData();
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
 
@@ -826,7 +939,28 @@
                     } catch (error) { console.error("分類載入錯誤:", error); }
                     finally { this.isCategoryLoading = false; }
                 },
+                async initGalleryData() {
+                    await this.fetchAlbumCategories();
+                    await this.preloadGalleryPhotos();
+                },
+                async preloadGalleryPhotos() {
+                    try {
+                        const response = await fetch('https://yuume-backend.onrender.com/api/photos-by-category/all');
+                        if (response.ok) {
+                            this.photos = await response.json();
+                        }
+                    } catch (error) {
+                        console.error("預載相簿失敗:", error);
+                    }
+                },
+                closeGalleryDropdown() {
+                    const toggle = document.getElementById('galleryDropdown');
+                    if (!toggle) return;
+                    const instance = bootstrap.Dropdown.getInstance(toggle) || new bootstrap.Dropdown(toggle);
+                    instance.hide();
+                },
                 async selectGallery(folderName) {
+                    this.closeGalleryDropdown();
                     this.currentTab = 'gallery';
                     this.currentGallery = folderName;
                     this.isPhotosLoading = true;
@@ -848,7 +982,7 @@
                     }
                 },
                 selectGalleryById(categoryId) {
-                    const category = this.albumCategories.find(c => c.id === categoryId);
+                    const category = this.albumCategories.find(c => c.id == categoryId);
                     if (category) this.selectGallery(category.folder_slug);
                 },
                 async fetchMemberData() {
