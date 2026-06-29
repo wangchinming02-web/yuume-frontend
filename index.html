@@ -747,7 +747,7 @@
                 async fetchAlbumCategories() {
                     this.isCategoryLoading = true;
                     try {
-                        const response = await fetch('http://yuume-backend.onrender.com/api/album-categories');
+                        const response = await fetch('https://yuume-backend.onrender.com/api/album-categories');
                         this.albumCategories = await response.json();
                     } catch (error) { console.error("分類載入錯誤:", error); }
                     finally { this.isCategoryLoading = false; }
@@ -758,7 +758,7 @@
                     this.isPhotosLoading = true;
 
                     try {
-                        const response = await fetch(`http://yuume-backend.onrender.com/api/photos-by-category/${folderName}`);
+                        const response = await fetch(`https://yuume-backend.onrender.com/api/photos-by-category/${folderName}`);
                         this.photos = await response.json();
 
                         // 核心修改：渲染完後強制 fslightbox 重新掃描
@@ -779,7 +779,7 @@
                 },
                 async fetchMemberData() {
                     try {
-                        const response = await fetch('http://yuume-backend.onrender.com/api/member/1');
+                        const response = await fetch('https://yuume-backend.onrender.com/api/member/1');
                         const data = await response.json();
                         if (data) this.memberName = data.name_tw || '優芽 Yuume';
                     } catch (error) { this.memberName = '優芽 Yuume'; }
@@ -787,7 +787,7 @@
                 async fetchEventData() {
                     this.isEventLoading = true;
                     try {
-                        const response = await fetch('http://yuume-backend.onrender.com/api/events');
+                        const response = await fetch('https://yuume-backend.onrender.com/api/events');
                         const data = await response.json();
                         this.events = data.map(item => ({
                             id: item.id,
