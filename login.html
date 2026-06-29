@@ -6,7 +6,7 @@
   <title>管理員登入</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="./js/admin-config.js"></script>
+  <script src="/yuume-frontend/js/admin-config.js"></script>
 </head>
 <body class="bg-light">
 
@@ -23,7 +23,7 @@
       </button>
 
       <div class="mt-3 text-center">
-        <a href="./index.html" class="text-decoration-none">← 返回首頁</a>
+        <a href="/yuume-frontend/index.html" class="text-decoration-none">← 返回首頁</a>
       </div>
     </div>
   </div>
@@ -62,7 +62,7 @@
               localStorage.setItem('admin_token', result.token);
               localStorage.removeItem('is_admin');
               alert('登入成功！');
-              window.location.href = './admin.html';
+              window.location.href = siteUrl('admin.html');
             } else {
               alert(result.message || '密碼錯誤');
             }
