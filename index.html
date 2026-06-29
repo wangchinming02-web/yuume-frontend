@@ -628,7 +628,7 @@
                             <div v-for="album in featuredAlbums" :key="album.category_id" class="gallery-item"
                                 @click="selectGalleryById(album.category_id)">
                                 <div class="card border-0 shadow-sm info-card" style="cursor: pointer;">
-                                    <img :src="album.image_url" class="gallery-img" alt="封面">
+                                    <img :src="album.path" class="gallery-img" alt="封面">
                                     <div class="p-2 text-center small text-muted fw-bold text-truncate">
                                         {{ album.category_name }}
                                     </div>
@@ -639,8 +639,8 @@
                         <template v-else>
                             <div v-for="photo in photos" :key="photo.id" class="gallery-item">
                                 <div class="gallery-card shadow-sm">
-                                    <a :href="photo.image_url" data-fslightbox="gallery">
-                                        <img :src="photo.image_url" class="gallery-img" alt="照片">
+                                    <a :href="photo.path" data-fslightbox="gallery">
+                                        <img :src="photo.path" class="gallery-img" alt="照片">
                                     </a>
                                     <div class="p-2 text-center small text-muted fw-bold">
                                         {{ photo.created_at ? photo.created_at.substring(0, 10) : '近期照片' }}
