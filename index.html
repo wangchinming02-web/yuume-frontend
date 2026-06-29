@@ -95,18 +95,31 @@
             transition: background 0.3s ease;
         }
 
+        @media (max-width: 767.98px) {
+            .main-content-scroll {
+                margin-left: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
         @media (min-width: 768px) {
             .member-sidebar {
-                position: relative;
-                /* 建議改為 relative 或移除 fixed */
-                min-height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 33.333333%;
+                height: 100vh;
+                overflow-y: auto;
                 display: flex;
                 flex-direction: column;
             }
 
             .main-content-scroll {
+                margin-left: 33.333333%;
+                width: 66.666667%;
+                max-width: 66.666667%;
                 min-height: 100vh;
-                /* 移除強制 100vh */
             }
         }
 
@@ -227,7 +240,7 @@
 
         <div class="row g-0">
 
-            <div class="col-12 col-md-4 member-sidebar d-flex flex-column align-items-center p-4">
+            <div class="col-12 member-sidebar d-flex flex-column align-items-center p-4">
 
                 <div class="profile-card p-3 mb-4">
                     <div class="text-center">
@@ -346,7 +359,7 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-8 p-4 p-md-5 main-content-scroll"
+            <div class="col-12 p-4 p-md-5 main-content-scroll"
                 :class="{ 'home-tab-active': currentTab === 'home' }">
 
                 <section class="mb-4" v-if="currentTab === 'home'">
