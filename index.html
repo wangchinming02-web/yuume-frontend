@@ -97,24 +97,23 @@
 
         @media (min-width: 768px) {
             .member-sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100vh;
-                overflow-y: auto;
+                position: relative;
+                /* 建議改為 relative 或移除 fixed */
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
             }
 
             .main-content-scroll {
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-                overflow-y: auto;
-            }
-
-            .main-content-scroll.home-tab-active {
-                overflow-y: hidden;
+                min-height: 100vh;
+                /* 移除強制 100vh */
             }
         }
+
+        .main-content-scroll.home-tab-active {
+            overflow-y: hidden;
+        }
+        
 
         .profile-card {
             background: var(--profile-card-bg);
@@ -724,7 +723,7 @@
                 this.fetchAlbumCategories();
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
-                
+
                 // 延遲一點點確保所有資源(包含 Lightbox)都到位
                 setTimeout(() => {
                     if (typeof refreshFsLightbox === "function") {
