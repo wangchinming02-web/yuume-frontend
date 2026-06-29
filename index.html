@@ -109,14 +109,12 @@
             background: var(--sidebar-bg);
             border-right: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 1000;
-            font-size: 0.95rem;
+            font-size: 0.94rem;
             transition: background 0.3s ease;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
         }
 
         .member-sidebar .intro-poem p {
-            font-size: 0.92rem;
+            font-size: 0.88rem;
         }
 
         .member-sidebar .profile-name {
@@ -124,43 +122,39 @@
         }
 
         .member-sidebar .profile-motto {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
         }
 
-        .member-sidebar .nav-buttons .btn,
-        .member-sidebar .social-buttons .btn,
-        .member-sidebar .action-buttons .btn {
-            font-size: 1.05rem !important;
-            padding-top: 0.38rem !important;
-            padding-bottom: 0.38rem !important;
+        .member-sidebar .sidebar-btn {
+            font-size: 0.92rem;
+            padding-top: 0.32rem;
+            padding-bottom: 0.32rem;
         }
 
         .member-sidebar .profile-promo-wrap {
             width: 100%;
-            margin-bottom: 0.25rem;
             line-height: 0;
         }
 
         .member-sidebar .profile-promo-img {
             width: 100%;
             height: auto;
-            max-height: none;
             object-fit: contain;
-            object-position: center;
+            object-position: center top;
             border-radius: 8px;
             display: block;
         }
 
         .member-sidebar .profile-card {
-            padding: 0.5rem !important;
-            margin-bottom: 0.25rem !important;
+            padding: 0.45rem !important;
+            margin-bottom: 0.2rem !important;
         }
 
         .member-sidebar .intro-poem {
-            padding-top: 0.3rem !important;
-            padding-bottom: 0.3rem !important;
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
+            margin-top: 0.2rem !important;
+            margin-bottom: 0.2rem !important;
         }
 
         .member-sidebar .intro-poem p {
@@ -168,55 +162,59 @@
         }
 
         .member-sidebar .social-buttons {
-            margin-bottom: 0.4rem !important;
-            gap: 0.25rem !important;
+            margin-bottom: 0.35rem !important;
+            gap: 0.2rem !important;
         }
 
         .member-sidebar .action-buttons {
-            gap: 0.25rem !important;
-            margin-bottom: 0.35rem !important;
-        }
-
-        .member-sidebar .nav-buttons {
             gap: 0.2rem !important;
             margin-bottom: 0 !important;
-            padding-top: 0.35rem !important;
-            margin-top: 0.35rem !important;
         }
 
         .member-sidebar .profile-card .mb-3 {
-            margin-bottom: 0.5rem !important;
+            margin-bottom: 0.4rem !important;
         }
 
         .member-sidebar .profile-card .mb-2 {
-            margin-bottom: 0.35rem !important;
+            margin-bottom: 0.3rem !important;
         }
 
         .member-sidebar .profile-card .mb-1 {
-            margin-bottom: 0.2rem !important;
+            margin-bottom: 0.15rem !important;
         }
 
         .member-sidebar .profile-card .p-2 {
-            padding: 0.35rem !important;
+            padding: 0.3rem !important;
         }
 
-        .sidebar-main-area {
+        .sidebar-scroll {
             flex: 1 1 auto;
             min-height: 0;
             width: 100%;
-            overflow: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .sidebar-bottom-area {
+        .sidebar-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar-footer {
             flex: 0 0 auto;
             width: 100%;
-            margin-top: auto;
-            padding-top: 0.15rem;
         }
 
         .member-sidebar .time-info-block {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             padding: 0.4rem !important;
+        }
+
+        .member-sidebar .nav-buttons {
+            margin-top: 0.5rem;
+        }
+
+        .detail-short {
+            display: none;
         }
 
         .member-sidebar .gallery-dropup {
@@ -287,6 +285,61 @@
             .main-content-scroll {
                 margin-left: 540px;
                 width: calc(100% - 540px);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .member-sidebar .profile-promo-img {
+                max-height: clamp(220px, 32vh, 300px);
+            }
+
+            .sidebar-scroll {
+                overflow-y: auto;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .member-sidebar .profile-promo-img {
+                max-height: clamp(260px, 34vh, 320px);
+            }
+        }
+
+        @media (min-width: 992px) and (max-height: 920px) {
+            .member-sidebar {
+                font-size: 0.9rem;
+            }
+
+            .member-sidebar .profile-name {
+                font-size: 1.1rem !important;
+            }
+
+            .member-sidebar .sidebar-btn {
+                font-size: 0.86rem;
+                padding-top: 0.26rem;
+                padding-bottom: 0.26rem;
+            }
+
+            .member-sidebar .profile-promo-img {
+                max-height: 160px;
+            }
+
+            .member-sidebar .intro-poem {
+                display: none !important;
+            }
+
+            .detail-short {
+                display: block !important;
+            }
+        }
+
+        @media (min-width: 992px) and (max-height: 820px) {
+            .member-sidebar .profile-promo-img {
+                max-height: 120px;
+            }
+
+            .member-sidebar .social-buttons .btn {
+                font-size: 0.78rem;
+                padding: 0.15rem 0.45rem;
             }
         }
 
@@ -448,28 +501,30 @@
 
         <div class="row g-0">
 
-            <div class="col-12 member-sidebar d-flex flex-column p-1 p-md-2">
+            <div class="col-12 member-sidebar d-flex flex-column p-2 p-md-2 p-lg-2">
 
-                <div class="sidebar-main-area">
-                <div class="profile-promo-wrap">
+                <div class="flex-shrink-0 profile-promo-wrap mb-1">
                     <img src="images/優芽宣傳圖(橫).png" alt="優芽宣傳圖"
                         class="img-fluid rounded shadow profile-promo-img" />
                 </div>
+
+                <div class="sidebar-scroll pe-lg-1">
                 <div class="profile-card">
                     <div class="text-center">
                         <h2 class="fw-bold mb-1 text-dark profile-name">{{ memberName }}</h2>
-                        <p class="text-muted mb-2">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
+                        <p class="text-muted mb-2 small">生日：{{ birthday }} | 應援色：{{ supportColor }} 🌱</p>
                     </div>
 
-                    <div class="intro-poem text-center border-top border-bottom py-2 my-2"
+                    <div class="intro-poem text-center border-top border-bottom py-1 my-1"
                         style="border-color: var(--card-border) !important;">
                         <p>如新芽般青翠</p>
                         <p>如枝條般優雅</p>
-                        <p class="fw-bold my-2 text-dark">我是北部的 solo 演出者</p>
+                        <p class="fw-bold my-1 text-dark">我是北部的 solo 演出者</p>
                         <p>希望能化作夏日的清爽微風</p>
                         <p>與樹蔭間灑落的陽光</p>
                         <p class="mb-0">透過演出給予大家溫柔的力量</p>
                     </div>
+                    <p class="detail-short small text-muted text-center mb-1">北部的 solo 演出者 🌱</p>
 
                     <div class="lh-base mb-3">
                         <p class="mb-1 text-dark"><strong>暱稱：</strong>{{ nickname }}</p>
@@ -495,42 +550,42 @@
                         </div>
                     </div>
 
-                    <div class="social-buttons d-flex flex-wrap justify-content-center gap-2 mb-3">
-                        <a :href="fbUrl" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">FB</a>
-                        <a :href="fbFanpageUrl" target="_blank" class="btn btn-outline-info btn-sm rounded-pill">粉專</a>
-                        <a :href="igUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">IG</a>
-                        <a :href="xUrl" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill">X</a>
-                        <a :href="ytUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill">YouTube</a>
+                    <div class="social-buttons d-flex flex-wrap justify-content-center gap-1 mb-2">
+                        <a :href="fbUrl" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill sidebar-btn">FB</a>
+                        <a :href="fbFanpageUrl" target="_blank" class="btn btn-outline-info btn-sm rounded-pill sidebar-btn">粉專</a>
+                        <a :href="igUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill sidebar-btn">IG</a>
+                        <a :href="xUrl" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill sidebar-btn d-none d-sm-inline-block">X</a>
+                        <a :href="ytUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill sidebar-btn">YouTube</a>
                     </div>
 
-                    <div class="action-buttons d-flex flex-column gap-2">
+                    <div class="action-buttons d-grid gap-1">
                         <a :href="blogUrl" target="_blank"
-                            class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm"
+                            class="btn btn-primary btn-sm w-100 fw-semibold rounded-pill shadow-sm sidebar-btn"
                             style="background-color: #4a7c59; border-color: #4a7c59;">
                             ❀優芽栽培日誌❀ (官方部落格)
                         </a>
                         <a :href="shopUrl" target="_blank"
-                            class="btn btn-success w-100 fw-bold rounded-pill shadow-sm">
+                            class="btn btn-success btn-sm w-100 fw-semibold rounded-pill shadow-sm sidebar-btn">
                             🛒 優芽種苗場 (周邊購買)
                         </a>
                     </div>
+                </div>
 
-                    <div class="nav-buttons w-100 d-flex flex-column gap-1 border-top"
-                        style="border-color: var(--card-border) !important;">
-                        <button class="btn btn-outline-secondary w-100 rounded-pill"
+                    <div class="nav-buttons d-grid gap-1 px-0 px-lg-1 pb-1">
+                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
-                        <button class="btn btn-outline-secondary w-100 rounded-pill"
+                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'live' }" @click="currentTab = 'live'">🎤 舞台出演行程</button>
-                        <button class="btn btn-outline-secondary w-100 rounded-pill"
+                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'cheki' }" @click="currentTab = 'cheki'">📸 特典會行程</button>
-                        <button class="btn btn-outline-secondary w-100 rounded-pill"
+                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'off' }" @click="currentTab = 'off'">🌱 Off 會 </button>
-                        <button class="btn btn-outline-success w-100 rounded-pill"
+                        <button class="btn btn-outline-success btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'goods' }" @click="currentTab = 'goods'">
                             🛒 物販與應援須知
                         </button>
                         <div class="dropup gallery-dropup w-100">
-                            <button class="btn btn-outline-secondary w-100 rounded-pill dropdown-toggle"
+                            <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill dropdown-toggle sidebar-btn"
                                 :class="{ active: currentTab === 'gallery' }" type="button" id="galleryDropdown"
                                 data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                                 📸 相簿(管理者自肥)
@@ -557,9 +612,8 @@
                         </div>
                     </div>
                 </div>
-                </div>
 
-                <div class="sidebar-bottom-area">
+                <div class="sidebar-footer mt-auto pt-1">
                 <div class="time-info-block rounded text-center font-monospace lh-sm shadow-sm">
                     <div>🕒 現在時間：<span class="fw-bold text-dark">{{ currentTime }}</span>
                     </div>
