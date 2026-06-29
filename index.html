@@ -93,6 +93,14 @@
             border-right: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 1000;
             transition: background 0.3s ease;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .member-sidebar::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         @media (max-width: 767.98px) {
@@ -110,7 +118,7 @@
                 left: 0;
                 width: 33.333333%;
                 height: 100vh;
-                overflow-y: auto;
+                overflow-y: hidden;
                 display: flex;
                 flex-direction: column;
             }
@@ -226,6 +234,48 @@
         .time-info-block {
             background: var(--time-block-bg);
             border: 1px solid var(--time-block-border);
+        }
+
+        .goods-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .goods-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .goods-image-col {
+            text-align: center;
+        }
+
+        .goods-image-col img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (min-width: 768px) {
+            .goods-layout {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .goods-image-col {
+                flex: 0 0 42%;
+                max-width: 42%;
+                text-align: left;
+            }
+
+            .goods-text-col {
+                flex: 1;
+                min-width: 0;
+            }
         }
     </style>
 </head>
@@ -575,47 +625,51 @@
 
                 <!--物販區主內容 -->
                 <section class="mb-5" v-if="currentTab === 'goods'">
-                    <div class="modal-body" style="background-color: var(--card-bg);">
-                        <!-- 直接展示這張圖片，讓粉絲一目瞭然 -->
-                        <img src="images/物販資訊.png" class="img-fluid rounded mb-3" alt="物販資訊">
-                        <ul class="text-muted small">
-                            <li>【物販資訊】</li>
-                            <li>🌿拍立得券 250元</li>
-                            <li>🌱手機券 200元 (可兌換手機拍 / 15秒影片)</li>
-                            <li>以上均含交流時間90秒，單次至多可使用2張券</li>
-                            <li>如有重大失誤，重拍以一次為限 (以工作人員認定為主)</li>
-                            <li>※指名/單筆消費物販券滿1000元，贈送百合券1張</li>
-                            <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
-                            <li>【百合券兌換方式】</li>
-                            <li>1張 手機拍</li>
-                            <li>2張 15秒影片</li>
-                            <li>3張 拍立得(白拍，不含簽繪及交流)</li>
-                            <li>4張 拍立得(含簽繪及交流)</li>
-                            <li>5張 私物簽名</li>
-                            <li>10張 紀念簽名板</li>
-                            <li>20張 指定歌曲cover舞蹈影片 or 錄音檔 (30秒內)</li>
-                            <li>30張 手寫信 / 通話15分鐘 / 視訊10分鐘</li>
-                            <li>40張 指定歌曲cover舞蹈影片 or 錄音檔 (5分鐘內)</li>
-                            <li>50張 挑選禮物 / 手作禮物 / 專屬訂製周邊1份</li>
-                            <li>60張 指定cover曲 / 風格 / 衣裝 演出1場</li>
-                            <li>100張 日k 2小時</li>
-                            <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
-                        </ul>
+                    <div class="goods-panel">
+                        <div class="goods-layout">
+                            <div class="goods-image-col">
+                                <img src="images/物販資訊.png" class="img-fluid rounded" alt="物販資訊">
+                            </div>
+                            <div class="goods-text-col">
+                                <ul class="text-muted small mb-0">
+                                    <li>【物販資訊】</li>
+                                    <li>🌿拍立得券 250元</li>
+                                    <li>🌱手機券 200元 (可兌換手機拍 / 15秒影片)</li>
+                                    <li>以上均含交流時間90秒，單次至多可使用2張券</li>
+                                    <li>如有重大失誤，重拍以一次為限 (以工作人員認定為主)</li>
+                                    <li>※指名/單筆消費物販券滿1000元，贈送百合券1張</li>
+                                    <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                                    <li>【百合券兌換方式】</li>
+                                    <li>1張 手機拍</li>
+                                    <li>2張 15秒影片</li>
+                                    <li>3張 拍立得(白拍，不含簽繪及交流)</li>
+                                    <li>4張 拍立得(含簽繪及交流)</li>
+                                    <li>5張 私物簽名</li>
+                                    <li>10張 紀念簽名板</li>
+                                    <li>20張 指定歌曲cover舞蹈影片 or 錄音檔 (30秒內)</li>
+                                    <li>30張 手寫信 / 通話15分鐘 / 視訊10分鐘</li>
+                                    <li>40張 指定歌曲cover舞蹈影片 or 錄音檔 (5分鐘內)</li>
+                                    <li>50張 挑選禮物 / 手作禮物 / 專屬訂製周邊1份</li>
+                                    <li>60張 指定cover曲 / 風格 / 衣裝 演出1場</li>
+                                    <li>100張 日k 2小時</li>
+                                    <li>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</li>
+                                </ul>
 
-                        <hr>
+                                <hr>
 
-                        <!-- 在下方補充文字版規則，讓規則更明確 -->
-                        <h6 style="color: var(--section-title);">⚠️ 現場應援與物販守則</h6>
-                        <ul class="text-muted small">
-                            <li>請勿主動觸碰成員之身體、衣物及裝飾配件。</li>
-                            <li>物販時間若有脫序行為，工作人員有權請離。</li>
-                            <li>禮品請於物販時間交由工作人員統一收取。</li>
-                            <li>若有拍照重拍需求，請當場向工作人員反應，重拍以一次為限。</li>
-                            <li>兌換20張以上品項前，請務必事先與營運溝通。</li>
-                            <li>演出時段是否開放攝影，以活動主辦單位公告為主。</li>
-                            <li>拍攝任何照片、影片需將檔案私訊「優芽 yuume」粉絲專頁進行審核。</li>
-                            <li>※ 審核通過之照片、影片須標記「#官方審核通過」後，方可自由發佈及分享，未通過之照片及影片，請勿以任何形式公開。</li>
-                        </ul>
+                                <h6 style="color: var(--section-title);">⚠️ 現場應援與物販守則</h6>
+                                <ul class="text-muted small mb-0">
+                                    <li>請勿主動觸碰成員之身體、衣物及裝飾配件。</li>
+                                    <li>物販時間若有脫序行為，工作人員有權請離。</li>
+                                    <li>禮品請於物販時間交由工作人員統一收取。</li>
+                                    <li>若有拍照重拍需求，請當場向工作人員反應，重拍以一次為限。</li>
+                                    <li>兌換20張以上品項前，請務必事先與營運溝通。</li>
+                                    <li>演出時段是否開放攝影，以活動主辦單位公告為主。</li>
+                                    <li>拍攝任何照片、影片需將檔案私訊「優芽 yuume」粉絲專頁進行審核。</li>
+                                    <li>※ 審核通過之照片、影片須標記「#官方審核通過」後，方可自由發佈及分享，未通過之照片及影片，請勿以任何形式公開。</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
