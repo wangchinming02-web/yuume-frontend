@@ -724,7 +724,7 @@
                 this.fetchAlbumCategories();
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
-                this.selectGallery('all');
+                
                 // 延遲一點點確保所有資源(包含 Lightbox)都到位
                 setTimeout(() => {
                     if (typeof refreshFsLightbox === "function") {
