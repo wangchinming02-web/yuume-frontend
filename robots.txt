@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /login.html
+Disallow: /admin.html
+Disallow: /admin_photo.html
+
+Sitemap: https://wangchinming02-web.github.io/yuume-frontend/sitemap.xml
