@@ -140,9 +140,10 @@
         }
 
         .member-sidebar .sidebar-btn {
-            font-size: 0.92rem;
-            padding-top: 0.32rem;
-            padding-bottom: 0.32rem;
+            font-size: 0.9rem;
+            padding-top: 0.2rem;
+            padding-bottom: 0.2rem;
+            line-height: 1.25;
         }
 
         .member-sidebar .profile-promo-wrap {
@@ -176,7 +177,8 @@
         }
 
         .member-sidebar .social-buttons {
-            margin-bottom: 0.35rem !important;
+            margin-top: 0.45rem !important;
+            margin-bottom: 0.45rem !important;
             gap: 0.2rem !important;
         }
 
@@ -220,11 +222,18 @@
 
         .member-sidebar .time-info-block {
             font-size: 0.8rem;
-            padding: 0.4rem !important;
+            padding: 0.3rem 0.35rem !important;
+            line-height: 1.3;
+        }
+
+        .member-sidebar .visit-count-line {
+            font-size: 0.8rem;
+            margin: 0.05rem 0;
         }
 
         .member-sidebar .nav-buttons {
-            margin-top: 0.5rem;
+            margin-top: 0.25rem;
+            padding-bottom: 0.1rem !important;
         }
 
         .detail-short {
@@ -304,7 +313,7 @@
 
         @media (min-width: 992px) {
             .member-sidebar .profile-promo-img {
-                max-height: clamp(220px, 32vh, 300px);
+                max-height: clamp(190px, 28vh, 270px);
             }
 
             .sidebar-scroll {
@@ -314,7 +323,7 @@
 
         @media (min-width: 1200px) {
             .member-sidebar .profile-promo-img {
-                max-height: clamp(260px, 34vh, 320px);
+                max-height: clamp(220px, 30vh, 290px);
             }
         }
 
@@ -328,9 +337,22 @@
             }
 
             .member-sidebar .sidebar-btn {
-                font-size: 0.86rem;
-                padding-top: 0.26rem;
-                padding-bottom: 0.26rem;
+                font-size: 0.84rem;
+                padding-top: 0.16rem;
+                padding-bottom: 0.16rem;
+            }
+
+            .member-sidebar .time-info-block {
+                font-size: 0.76rem;
+                padding: 0.25rem 0.3rem !important;
+            }
+
+            .member-sidebar .visit-count-line {
+                font-size: 0.76rem;
+            }
+
+            .member-sidebar .nav-buttons {
+                margin-top: 0.15rem;
             }
 
             .member-sidebar .profile-promo-img {
@@ -573,7 +595,7 @@
                         </div>
                     </div>
 
-                    <div class="social-buttons d-flex flex-wrap justify-content-center gap-1 mb-2">
+                    <div class="social-buttons d-flex flex-wrap justify-content-center gap-1">
                         <a :href="fbUrl" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill sidebar-btn">FB</a>
                         <a :href="fbFanpageUrl" target="_blank" class="btn btn-outline-info btn-sm rounded-pill sidebar-btn">粉專</a>
                         <a :href="igUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill sidebar-btn">IG</a>
@@ -594,7 +616,7 @@
                     </div>
                 </div>
 
-                    <div class="nav-buttons d-grid gap-1 px-0 px-lg-1 pb-1">
+                    <div class="nav-buttons d-grid gap-1 px-0 px-lg-1">
                         <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
                         <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
@@ -636,12 +658,15 @@
                     </div>
                 </div>
 
-                <div class="sidebar-footer mt-auto pt-1">
+                <div class="sidebar-footer mt-auto pt-0">
                 <div class="time-info-block rounded text-center font-monospace lh-sm shadow-sm">
                     <div>🕒 現在時間：<span class="fw-bold text-dark">{{ currentTime }}</span>
                     </div>
                     <div>🔄 最後更新：<span class="text-muted">{{ lastUpdateTime
                             }}</span></div>
+                    <div class="visit-count-line">
+                        🌱 累積人次：<span class="fw-bold text-dark">{{ formattedVisitCount }}</span>
+                    </div>
                     <div><span class="text-dark">管理者:發芽的白學家/臭執著仔</span></div>
                 </div>
                 </div>
@@ -986,6 +1011,14 @@
     <script>
         const { createApp } = Vue;
 
+        const API_BASE = (() => {
+            const host = window.location.hostname;
+            if (host === 'localhost' || host === '127.0.0.1') {
+                return 'http://localhost:8000/api';
+            }
+            return 'https://yuume-backend.onrender.com/api';
+        })();
+
         const app = createApp({
             data() {
                 return {
@@ -1012,6 +1045,8 @@
                     isCategoryLoading: true,
                     events: [],
                     isEventLoading: true,
+                    totalVisits: null,
+                    isVisitCountLoading: true,
                     isDarkMode: false
                 }
             },
@@ -1044,12 +1079,18 @@
                     if (this.currentGallery === 'all') return '全部相簿';
                     const cat = this.albumCategories.find(c => c.folder_slug === this.currentGallery);
                     return cat ? cat.name : this.currentGallery;
+                },
+                formattedVisitCount() {
+                    if (this.isVisitCountLoading) return '...';
+                    if (this.totalVisits === null) return '--';
+                    return this.totalVisits.toLocaleString('zh-TW');
                 }
             },
             mounted() {
                 this.initTheme();
                 this.fetchMemberData();
                 this.fetchEventData();
+                this.initVisitCount();
                 this.initGalleryData();
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
@@ -1090,7 +1131,7 @@
                 async fetchAlbumCategories() {
                     this.isCategoryLoading = true;
                     try {
-                        const data = await this.fetchJson('https://yuume-backend.onrender.com/api/album-categories');
+                        const data = await this.fetchJson(`${API_BASE}/album-categories`);
                         if (!Array.isArray(data)) {
                             throw new Error('API 回傳格式錯誤');
                         }
@@ -1108,7 +1149,7 @@
                 },
                 async preloadGalleryPhotos() {
                     try {
-                        const response = await fetch('https://yuume-backend.onrender.com/api/photos-by-category/all');
+                        const response = await fetch(`${API_BASE}/photos-by-category/all`);
                         if (response.ok) {
                             this.photos = await response.json();
                         }
@@ -1129,7 +1170,7 @@
                     this.isPhotosLoading = true;
 
                     try {
-                        const response = await fetch(`https://yuume-backend.onrender.com/api/photos-by-category/${folderName}`);
+                        const response = await fetch(`${API_BASE}/photos-by-category/${folderName}`);
                         this.photos = await response.json();
 
                         // 核心修改：渲染完後強制 fslightbox 重新掃描
@@ -1165,7 +1206,7 @@
                 },
                 async fetchMemberData() {
                     try {
-                        const data = await this.fetchJson('https://yuume-backend.onrender.com/api/member/1');
+                        const data = await this.fetchJson(`${API_BASE}/member/1`);
                         if (data) this.memberName = data.name_tw || '優芽 Yuume';
                     } catch (error) {
                         console.error("成員資料載入錯誤:", error);
@@ -1175,7 +1216,7 @@
                 async fetchEventData() {
                     this.isEventLoading = true;
                     try {
-                        const data = await this.fetchJson('https://yuume-backend.onrender.com/api/events');
+                        const data = await this.fetchJson(`${API_BASE}/events`);
                         if (!Array.isArray(data)) {
                             throw new Error('API 回傳格式錯誤');
                         }
@@ -1192,6 +1233,30 @@
                         this.events = [];
                     } finally {
                         this.isEventLoading = false;
+                    }
+                },
+                async initVisitCount() {
+                    this.isVisitCountLoading = true;
+                    try {
+                        const stats = await this.fetchJson(`${API_BASE}/stats`);
+                        if (stats && typeof stats.total_visits === 'number') {
+                            this.totalVisits = stats.total_visits;
+                        }
+
+                        if (!sessionStorage.getItem('yuume_visit_counted')) {
+                            const response = await fetch(`${API_BASE}/visit`, { method: 'POST' });
+                            if (response.ok) {
+                                const result = await response.json();
+                                if (typeof result.total_visits === 'number') {
+                                    this.totalVisits = result.total_visits;
+                                }
+                                sessionStorage.setItem('yuume_visit_counted', '1');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('人次計數失敗:', error);
+                    } finally {
+                        this.isVisitCountLoading = false;
                     }
                 },
                 updateClock() {
