@@ -740,7 +740,8 @@
                         <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-live'">
                             <thead>
                                 <tr>
-                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 8%">場次</th>
+                                    <th style="width: 17%">日期</th>
                                     <th style="width: 60%">活動名稱 / 地點</th>
                                     <th style="width: 15%">狀態</th>
                                 </tr>
@@ -748,6 +749,7 @@
 
                             <tbody v-if="isEventLoading" class="placeholder-glow">
                                 <tr v-for="n in 4" :key="'live-skeleton-' + n">
+                                    <td><span class="placeholder col-4 bg-secondary opacity-25"></span></td>
                                     <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
                                     <td>
                                         <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
@@ -759,6 +761,7 @@
 
                             <tbody v-else>
                                 <tr v-for="event in liveEvents" :key="event.id">
+                                    <td class="fw-bold text-success">{{ event.eventNumber }}</td>
                                     <td>{{ event.date }}</td>
                                     <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
@@ -768,7 +771,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="liveEvents.length === 0">
-                                    <td colspan="3" class="text-muted text-center py-3">暫無舞台演出行程</td>
+                                    <td colspan="4" class="text-muted text-center py-3">暫無舞台演出行程</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -781,7 +784,8 @@
                         <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-cheki'">
                             <thead>
                                 <tr>
-                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 8%">場次</th>
+                                    <th style="width: 17%">日期</th>
                                     <th style="width: 60%">活動名稱 / 地點</th>
                                     <th style="width: 15%">狀態</th>
                                 </tr>
@@ -789,6 +793,7 @@
 
                             <tbody v-if="isEventLoading" class="placeholder-glow">
                                 <tr v-for="n in 4" :key="'cheki-skeleton-' + n">
+                                    <td><span class="placeholder col-4 bg-secondary opacity-25"></span></td>
                                     <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
                                     <td>
                                         <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
@@ -800,6 +805,7 @@
 
                             <tbody v-else>
                                 <tr v-for="event in chekiEvents" :key="event.id">
+                                    <td class="fw-bold text-success">{{ event.eventNumber }}</td>
                                     <td>{{ event.date }}</td>
                                     <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
@@ -809,7 +815,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="chekiEvents.length === 0">
-                                    <td colspan="3" class="text-muted text-center py-3">暫無特典會行程</td>
+                                    <td colspan="4" class="text-muted text-center py-3">暫無特典會行程</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -822,7 +828,8 @@
                         <table class="table table-hover align-middle custom-table shadow-sm" :key="'table-off'">
                             <thead>
                                 <tr>
-                                    <th style="width: 25%">日期</th>
+                                    <th style="width: 8%">場次</th>
+                                    <th style="width: 17%">日期</th>
                                     <th style="width: 60%">活動名稱 / 地點</th>
                                     <th style="width: 15%">狀態</th>
                                 </tr>
@@ -830,6 +837,7 @@
 
                             <tbody v-if="isEventLoading" class="placeholder-glow">
                                 <tr v-for="n in 2" :key="'off-skeleton-' + n">
+                                    <td><span class="placeholder col-4 bg-secondary opacity-25"></span></td>
                                     <td><span class="placeholder col-8 bg-secondary opacity-25"></span></td>
                                     <td>
                                         <span class="placeholder col-10 bg-secondary opacity-25 mb-1 d-block"></span>
@@ -841,6 +849,7 @@
 
                             <tbody v-else>
                                 <tr v-for="event in offEvents" :key="event.id">
+                                    <td class="fw-bold text-success">{{ event.eventNumber }}</td>
                                     <td>{{ event.date }}</td>
                                     <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
@@ -850,7 +859,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="offEvents.length === 0">
-                                    <td colspan="3" class="text-muted text-center py-3">暫無 Off 會行程</td>
+                                    <td colspan="4" class="text-muted text-center py-3">暫無 Off 會行程</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1014,9 +1023,9 @@
                     return this.events.filter(event => event.date === first.date);
                 },
                 homeEvents() { return this.events ? this.events.slice(0, 10) : []; },
-                liveEvents() { return this.events ? this.events.filter(e => e.category === 'live') : []; },
-                chekiEvents() { return this.events ? this.events.filter(e => e.category === 'cheki') : []; },
-                offEvents() { return this.events ? this.events.filter(e => e.category === 'off') : []; },
+                liveEvents() { return this.withEventNumbers('live'); },
+                chekiEvents() { return this.withEventNumbers('cheki'); },
+                offEvents() { return this.withEventNumbers('off'); },
                 featuredAlbums() {
                     if (!this.photos || this.photos.length === 0) return [];
                     const map = new Map();
@@ -1053,6 +1062,20 @@
                 }, 500);
             },
             methods: {
+                withEventNumbers(category) {
+                    if (!this.events?.length) return [];
+                    const inCategory = this.events.filter(e => e.category === category);
+                    const sortedAsc = [...inCategory].sort((a, b) => {
+                        const diff = new Date(a.date) - new Date(b.date);
+                        return diff !== 0 ? diff : a.id - b.id;
+                    });
+                    const numberMap = Object.fromEntries(
+                        sortedAsc.map((e, i) => [e.id, i + 1])
+                    );
+                    return [...inCategory]
+                        .sort((a, b) => new Date(b.date) - new Date(a.date))
+                        .map(e => ({ ...e, eventNumber: numberMap[e.id] }));
+                },
                 initTheme() {
                     const savedTheme = localStorage.getItem('theme') || 'light';
                     this.isDarkMode = (savedTheme === 'dark');
