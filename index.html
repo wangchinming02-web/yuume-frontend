@@ -237,6 +237,10 @@
             gap: 0.2rem !important;
         }
 
+        .member-sidebar .social-buttons .sidebar-btn {
+            min-height: auto;
+        }
+
         .member-sidebar .action-buttons {
             gap: 0.55rem !important;
             margin-top: 0.25rem !important;
@@ -245,8 +249,9 @@
 
         .member-sidebar .action-buttons .sidebar-btn {
             font-size: 0.95rem;
-            padding: 0.45rem 0.75rem;
-            min-height: 2.4rem;
+            padding: 0.3rem 0.75rem;
+            min-height: 2rem;
+            line-height: 1.35;
         }
 
         .member-sidebar .profile-card .mb-3 {
@@ -417,10 +422,19 @@
                 padding-bottom: 0.16rem;
             }
 
+            .member-sidebar .nav-buttons .sidebar-btn,
+            .member-sidebar .action-buttons .sidebar-btn {
+                min-height: 2rem;
+            }
+
             .member-sidebar .nav-buttons .sidebar-btn {
                 font-size: 1rem;
                 padding: 0.28rem 0.85rem;
-                min-height: 2rem;
+            }
+
+            .member-sidebar .action-buttons .sidebar-btn {
+                font-size: 0.9rem;
+                padding: 0.28rem 0.75rem;
             }
 
             .member-sidebar .time-info-block {
@@ -696,12 +710,12 @@
 
                     <div class="action-buttons d-grid gap-2">
                         <a :href="blogUrl" target="_blank"
-                            class="btn btn-primary btn-sm w-100 fw-semibold rounded-pill shadow-sm sidebar-btn"
+                            class="btn btn-primary w-100 fw-semibold rounded-pill shadow-sm sidebar-btn"
                             style="background-color: #4a7c59; border-color: #4a7c59;">
                             ❀優芽栽培日誌❀ (官方部落格)
                         </a>
                         <a :href="shopUrl" target="_blank"
-                            class="btn btn-success btn-sm w-100 fw-semibold rounded-pill shadow-sm sidebar-btn">
+                            class="btn btn-success w-100 fw-semibold rounded-pill shadow-sm sidebar-btn">
                             🛒 優芽種苗場 (周邊購買)
                         </a>
                     </div>
