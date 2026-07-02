@@ -287,8 +287,16 @@
         }
 
         .member-sidebar .nav-buttons {
-            margin-top: 0.25rem;
-            padding-bottom: 0.1rem !important;
+            margin-top: 0.5rem;
+            padding-bottom: 0.25rem !important;
+            gap: 0.5rem !important;
+        }
+
+        .member-sidebar .nav-buttons .sidebar-btn {
+            font-size: 1rem;
+            padding: 0.5rem 0.85rem;
+            min-height: 2.55rem;
+            line-height: 1.35;
         }
 
         .nav-buttons a.sidebar-btn {
@@ -400,6 +408,12 @@
                 font-size: 0.84rem;
                 padding-top: 0.16rem;
                 padding-bottom: 0.16rem;
+            }
+
+            .member-sidebar .nav-buttons .sidebar-btn {
+                font-size: 0.92rem;
+                padding: 0.42rem 0.7rem;
+                min-height: 2.35rem;
             }
 
             .member-sidebar .time-info-block {
@@ -680,21 +694,21 @@
                     </div>
                 </div>
 
-                    <div class="nav-buttons d-grid gap-1 px-0 px-lg-1">
-                        <a href="#home" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                    <div class="nav-buttons d-grid gap-2 px-0 px-lg-1">
+                        <a href="#home" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'home' }" @click.prevent="switchTab('home')">🏠 最新行程 (首頁)</a>
-                        <a href="#live" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                        <a href="#live" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'live' }" @click.prevent="switchTab('live')">🎤 舞台出演行程</a>
-                        <a href="#cheki" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                        <a href="#cheki" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'cheki' }" @click.prevent="switchTab('cheki')">📸 特典會行程</a>
-                        <a href="#off" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                        <a href="#off" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'off' }" @click.prevent="switchTab('off')">🌱 Off 會 </a>
-                        <a href="#goods" class="btn btn-outline-success btn-sm w-100 rounded-pill sidebar-btn"
+                        <a href="#goods" class="btn btn-outline-success w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'goods' }" @click.prevent="switchTab('goods')">
                             🛒 物販與應援須知
                         </a>
                         <div class="dropup gallery-dropup w-100">
-                            <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill dropdown-toggle sidebar-btn"
+                            <button class="btn btn-outline-secondary w-100 rounded-pill dropdown-toggle sidebar-btn"
                                 :class="{ active: currentTab === 'gallery' }" type="button" id="galleryDropdown"
                                 data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                                 📸 相簿(管理者自肥)
