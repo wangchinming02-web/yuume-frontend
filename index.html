@@ -33,7 +33,7 @@
     <meta property="og:description"
         content="由粉絲製作維護的優芽 Yuume（青羽優芽）應援站。北部地下偶像最新舞台、特典會、Off 會、物販須知與活動相簿一站掌握。">
     <meta property="og:url" content="https://wangchinming02-web.github.io/yuume-frontend/">
-    <meta property="og:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/og-image.png">
+    <meta property="og:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/Aoba-yuume.png">
     <meta property="og:image:width" content="800">
     <meta property="og:image:height" content="566">
     <meta property="og:image:alt" content="優芽 Yuume 官方宣傳圖">
@@ -41,8 +41,8 @@
     <meta name="twitter:title" content="優芽 Yuume 應援網站｜最新行程・特典會・Off 會情報">
     <meta name="twitter:description"
         content="由粉絲製作維護的優芽 Yuume（青羽優芽）應援站。北部地下偶像最新舞台、特典會、Off 會、物販須知與活動相簿一站掌握。">
-    <meta name="twitter:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/og-image.png">
-    <link rel="preload" as="image" href="images/og-image.png">
+    <meta name="twitter:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/Aoba-yuume.png">
+    <link rel="preload" as="image" href="images/Aoba-yuume.png">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -604,7 +604,7 @@
             <div class="col-12 member-sidebar d-flex flex-column p-2 p-md-2 p-lg-2">
 
                 <div class="flex-shrink-0 profile-promo-wrap mb-1">
-                    <img src="images/og-image.png" alt="優芽 Yuume 官方宣傳圖"
+                    <img src="images/Aoba-yuume.png" alt="優芽 Yuume 官方宣傳圖"
                         class="img-fluid rounded shadow profile-promo-img" />
                 </div>
 
@@ -1288,6 +1288,14 @@
                     }
                 },
                 updateEventJsonLd() {
+                    const siteUrl = 'https://wangchinming02-web.github.io/yuume-frontend/';
+                    const personId = siteUrl + '#person';
+                    const promoImage = siteUrl + 'images/Aoba-yuume.png';
+                    const categoryLabels = {
+                        live: '舞台出演',
+                        cheki: '特典會',
+                        off: 'Off 會'
+                    };
                     const upcoming = (this.events || [])
                         .filter(e => e.status !== '已結束' && e.date)
                         .slice(0, 5);
@@ -1297,17 +1305,30 @@
                         return;
                     }
                     const graph = upcoming.map(event => {
+                        const typeLabel = categoryLabels[event.category] || '活動';
+                        let description = `優芽 Yuume ${typeLabel}：${event.title}。`;
+                        if (event.note) description += `場地：${event.note}。`;
+                        description += '詳情請見優芽應援網站。';
                         const item = {
                             '@type': 'Event',
                             name: event.title,
+                            description,
                             startDate: event.date,
+                            endDate: event.date,
+                            image: promoImage,
+                            performer: {
+                                '@type': 'Person',
+                                '@id': personId,
+                                name: '優芽 Yuume'
+                            },
                             eventStatus: 'https://schema.org/EventScheduled',
                             eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
                             organizer: {
                                 '@type': 'Person',
-                                '@id': 'https://wangchinming02-web.github.io/yuume-frontend/#person'
+                                '@id': personId,
+                                url: 'https://yuume-aoba.blogspot.com/'
                             },
-                            url: 'https://wangchinming02-web.github.io/yuume-frontend/'
+                            url: siteUrl
                         };
                         if (event.note) {
                             item.location = { '@type': 'Place', name: event.note };
