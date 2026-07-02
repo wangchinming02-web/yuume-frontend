@@ -1095,12 +1095,6 @@
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
 
-                // 延遲一點點確保所有資源(包含 Lightbox)都到位
-                setTimeout(() => {
-                    if (typeof refreshFsLightbox === "function") {
-                        refreshFsLightbox();
-                    }
-                }, 500);
             },
             methods: {
                 withEventNumbers(category) {
@@ -1163,6 +1157,13 @@
                     const instance = bootstrap.Dropdown.getInstance(toggle) || new bootstrap.Dropdown(toggle);
                     instance.hide();
                 },
+                refreshLightbox() {
+                    this.$nextTick(() => {
+                        if (typeof refreshFsLightbox === 'function') {
+                            refreshFsLightbox();
+                        }
+                    });
+                },
                 async selectGallery(folderName) {
                     this.closeGalleryDropdown();
                     this.currentTab = 'gallery';
@@ -1172,18 +1173,13 @@
                     try {
                         const response = await fetch(`${API_BASE}/photos-by-category/${folderName}`);
                         this.photos = await response.json();
-
-                        // 核心修改：渲染完後強制 fslightbox 重新掃描
-                        this.$nextTick(() => {
-                            if (typeof refreshFsLightbox === "function") {
-                                refreshFsLightbox();
-                            }
-                        });
                     } catch (error) {
                         console.error("載入分類照片失敗:", error);
                     } finally {
                         this.isPhotosLoading = false;
                     }
+                    // 須等 loading 結束、照片 <a> 出現在 DOM 後再掃描
+                    this.refreshLightbox();
                 },
                 selectGalleryById(categoryId) {
                     const category = this.albumCategories.find(c => c.id == categoryId);
