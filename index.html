@@ -13,21 +13,67 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 主要 SVG Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='85'%3E%F0%9F%8C%B1%3C/text%3E%3C/svg%3E"
+        type="image/svg+xml">
+    <!-- 備用 PNG（給 Safari / 舊瀏覽器） -->
+    <link rel="icon" href="favicon.png" sizes="32x32">
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="google-site-verification" content="8EK3lY5sO8P0Mg_jHFD2Yx7cakJP2umgqWggcKdIsn0" />
-    <title>優芽yuume應援網站</title>
-    <meta name="description" content="優芽 Yuume（ゆうめ）粉絲應援站。由粉絲製作維護，整理北部地下偶像 solo 演出者優芽的最新舞台行程、特典會、Off 會情報、物販與應援須知、活動相簿。">
+    <title>優芽 Yuume 應援網站｜最新行程・特典會・Off 會情報</title>
+    <meta name="description"
+        content="優芽 Yuume（ゆうめ／青羽優芽）粉絲應援站。由粉絲製作維護，整理北部地下偶像 solo 演出者在台北的最新舞台行程、特典會、Off 會情報、物販與應援須知、活動相簿。">
     <link rel="canonical" href="https://wangchinming02-web.github.io/yuume-frontend/">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="zh_TW">
-    <meta property="og:site_name" content="優芽yuume應援網站">
-    <meta property="og:title" content="優芽yuume應援網站">
-    <meta property="og:description" content="由粉絲製作維護的優芽 Yuume 應援站。最新行程、物販須知、活動相簿一站掌握。">
+    <meta property="og:site_name" content="優芽 Yuume 應援網站">
+    <meta property="og:title" content="優芽 Yuume 應援網站｜最新行程・特典會・Off 會情報">
+    <meta property="og:description"
+        content="由粉絲製作維護的優芽 Yuume（青羽優芽）應援站。北部地下偶像最新舞台、特典會、Off 會、物販須知與活動相簿一站掌握。">
     <meta property="og:url" content="https://wangchinming02-web.github.io/yuume-frontend/">
-    <meta property="og:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/%E5%84%AA%E8%8A%BD%E5%AE%A3%E5%82%B3%E5%9C%96(%E6%A9%AB).png">
+    <meta property="og:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/og-image.png">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="566">
+    <meta property="og:image:alt" content="優芽 Yuume 官方宣傳圖">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="優芽yuume應援網站">
-    <meta name="twitter:description" content="由粉絲製作維護的優芽 Yuume 應援站。最新行程、物販須知、活動相簿一站掌握。">
-    <meta name="twitter:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/%E5%84%AA%E8%8A%BD%E5%AE%A3%E5%82%B3%E5%9C%96(%E6%A9%AB).png">
+    <meta name="twitter:title" content="優芽 Yuume 應援網站｜最新行程・特典會・Off 會情報">
+    <meta name="twitter:description"
+        content="由粉絲製作維護的優芽 Yuume（青羽優芽）應援站。北部地下偶像最新舞台、特典會、Off 會、物販須知與活動相簿一站掌握。">
+    <meta name="twitter:image" content="https://wangchinming02-web.github.io/yuume-frontend/images/og-image.png">
+    <link rel="preload" as="image" href="images/og-image.png">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "@id": "https://wangchinming02-web.github.io/yuume-frontend/#website",
+                "url": "https://wangchinming02-web.github.io/yuume-frontend/",
+                "name": "優芽 Yuume 應援網站",
+                "description": "優芽 Yuume（青羽優芽）粉絲應援站，提供最新舞台行程、特典會、Off 會情報與活動相簿。",
+                "inLanguage": "zh-TW",
+                "publisher": { "@id": "https://wangchinming02-web.github.io/yuume-frontend/#person" }
+            },
+            {
+                "@type": "Person",
+                "@id": "https://wangchinming02-web.github.io/yuume-frontend/#person",
+                "name": "優芽 Yuume",
+                "alternateName": ["ゆうめ", "青羽優芽", "Yuume Aoba", "芽芽"],
+                "description": "北部地下偶像 solo 演出者",
+                "sameAs": [
+                    "https://www.facebook.com/yuume.aoba",
+                    "https://www.facebook.com/yuume.fanpage",
+                    "https://www.instagram.com/yuume.aoba",
+                    "https://x.com/yuume_aoba",
+                    "https://www.youtube.com/@yuume-aoba",
+                    "https://yuume-aoba.blogspot.com/"
+                ]
+            }
+        ]
+    }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* 🎨 基礎變數與光/深模式設定 */
@@ -558,7 +604,7 @@
             <div class="col-12 member-sidebar d-flex flex-column p-2 p-md-2 p-lg-2">
 
                 <div class="flex-shrink-0 profile-promo-wrap mb-1">
-                    <img src="images/優芽宣傳圖(橫).png" alt="優芽宣傳圖"
+                    <img src="images/og-image.png" alt="優芽 Yuume 官方宣傳圖"
                         class="img-fluid rounded shadow profile-promo-img" />
                 </div>
 
@@ -979,7 +1025,7 @@
                             <div v-for="album in featuredAlbums" :key="album.category_id" class="gallery-item"
                                 @click="selectGalleryById(album.category_id)">
                                 <div class="card border-0 shadow-sm info-card" style="cursor: pointer;">
-                                    <img :src="album.path" class="gallery-img" alt="封面">
+                                    <img :src="album.path" class="gallery-img" :alt="album.category_name + ' 相簿封面'">
                                     <div class="p-2 text-center text-dark fw-bold">
                                         {{ album.category_name }}
                                     </div>
@@ -991,7 +1037,7 @@
                             <div v-for="photo in photos" :key="photo.id" class="gallery-item">
                                 <div class="gallery-card shadow-sm">
                                     <a :href="photo.path" data-fslightbox="gallery">
-                                        <img :src="photo.path" class="gallery-img" alt="照片">
+                                        <img :src="photo.path" class="gallery-img" :alt="currentAlbumTitle + ' 活動照片'">
                                     </a>
                                     <div class="p-2 text-center text-muted fw-bold">
                                         {{ photo.created_at ? photo.created_at.substring(0, 10) : '近期照片' }}
@@ -1238,7 +1284,41 @@
                         this.events = [];
                     } finally {
                         this.isEventLoading = false;
+                        this.updateEventJsonLd();
                     }
+                },
+                updateEventJsonLd() {
+                    const upcoming = (this.events || [])
+                        .filter(e => e.status !== '已結束' && e.date)
+                        .slice(0, 5);
+                    const existing = document.getElementById('event-json-ld');
+                    if (!upcoming.length) {
+                        if (existing) existing.remove();
+                        return;
+                    }
+                    const graph = upcoming.map(event => {
+                        const item = {
+                            '@type': 'Event',
+                            name: event.title,
+                            startDate: event.date,
+                            eventStatus: 'https://schema.org/EventScheduled',
+                            eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                            organizer: {
+                                '@type': 'Person',
+                                '@id': 'https://wangchinming02-web.github.io/yuume-frontend/#person'
+                            },
+                            url: 'https://wangchinming02-web.github.io/yuume-frontend/'
+                        };
+                        if (event.note) {
+                            item.location = { '@type': 'Place', name: event.note };
+                        }
+                        return item;
+                    });
+                    const el = existing || document.createElement('script');
+                    el.type = 'application/ld+json';
+                    el.id = 'event-json-ld';
+                    el.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+                    if (!existing) document.head.appendChild(el);
                 },
                 async initVisitCount() {
                     this.isVisitCountLoading = true;
