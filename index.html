@@ -233,13 +233,20 @@
 
         .member-sidebar .social-buttons {
             margin-top: 0.45rem !important;
-            margin-bottom: 0.45rem !important;
+            margin-bottom: 0.85rem !important;
             gap: 0.2rem !important;
         }
 
         .member-sidebar .action-buttons {
-            gap: 0.2rem !important;
+            gap: 0.55rem !important;
+            margin-top: 0.25rem !important;
             margin-bottom: 0 !important;
+        }
+
+        .member-sidebar .action-buttons .sidebar-btn {
+            font-size: 0.95rem;
+            padding: 0.45rem 0.75rem;
+            min-height: 2.4rem;
         }
 
         .member-sidebar .profile-card .mb-3 {
@@ -287,15 +294,15 @@
         }
 
         .member-sidebar .nav-buttons {
-            margin-top: 0.6rem;
-            padding-bottom: 0.35rem !important;
-            gap: 0.65rem !important;
+            margin-top: 0.75rem;
+            padding-bottom: 0.45rem !important;
+            gap: 0.8rem !important;
         }
 
         .member-sidebar .nav-buttons .sidebar-btn {
-            font-size: 1.12rem;
-            padding: 0.65rem 1rem;
-            min-height: 3rem;
+            font-size: 1.2rem;
+            padding: 0.75rem 1.1rem;
+            min-height: 3.35rem;
             line-height: 1.4;
         }
 
@@ -411,9 +418,9 @@
             }
 
             .member-sidebar .nav-buttons .sidebar-btn {
-                font-size: 1rem;
-                padding: 0.55rem 0.85rem;
-                min-height: 2.75rem;
+                font-size: 1.05rem;
+                padding: 0.6rem 0.9rem;
+                min-height: 2.95rem;
             }
 
             .member-sidebar .time-info-block {
@@ -538,6 +545,12 @@
             position: sticky;
             top: 0;
             z-index: 10;
+        }
+
+        .custom-table .event-type-badge {
+            font-size: 1.05rem;
+            padding: 0.5em 0.9em;
+            white-space: nowrap;
         }
 
         @media (max-width: 992px) {
@@ -681,7 +694,7 @@
                         <a :href="ytUrl" target="_blank" class="btn btn-outline-danger btn-sm rounded-pill sidebar-btn">YouTube</a>
                     </div>
 
-                    <div class="action-buttons d-grid gap-1">
+                    <div class="action-buttons d-grid gap-2">
                         <a :href="blogUrl" target="_blank"
                             class="btn btn-primary btn-sm w-100 fw-semibold rounded-pill shadow-sm sidebar-btn"
                             style="background-color: #4a7c59; border-color: #4a7c59;">
@@ -694,7 +707,7 @@
                     </div>
                 </div>
 
-                    <div class="nav-buttons d-grid gap-3 px-0 px-lg-1">
+                    <div class="nav-buttons d-grid gap-4 px-0 px-lg-1">
                         <a href="#home" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
                             :class="{ active: currentTab === 'home' }" @click.prevent="switchTab('home')">🏠 最新行程 (首頁)</a>
                         <a href="#live" class="btn btn-outline-secondary w-100 rounded-pill sidebar-btn"
@@ -777,10 +790,10 @@
                                 <span :class="['badge', event.status === '已結束' ? 'bg-secondary' : 'bg-success']">{{
                                     event.status }}</span>
                             </div>
-                            <span class="badge bg-dark fw-bold" v-if="event.category === 'live'">🎤 舞台出演</span>
-                            <span class="badge bg-secondary text-dark fw-bold" v-else-if="event.category === 'cheki'">📸
+                            <span class="badge event-type-badge bg-dark fw-bold" v-if="event.category === 'live'">🎤 舞台出演</span>
+                            <span class="badge event-type-badge bg-secondary text-dark fw-bold" v-else-if="event.category === 'cheki'">📸
                                 特典會</span>
-                            <span class="badge bg-warning text-dark fw-bold" v-else>🌱 Off 會</span>
+                            <span class="badge event-type-badge bg-warning text-dark fw-bold" v-else>🌱 Off 會</span>
                         </div>
                         <h5 class="mb-1 text-dark" style="font-size: 1.15rem;">{{ event.title }}</h5>
                         <p class="text-muted mb-0">日期：{{ event.date }}</p>
@@ -795,9 +808,9 @@
                         <table class="table table-hover align-middle custom-table" :key="'table-home'">
                             <thead>
                                 <tr>
-                                    <th style="width: 20%">日期</th>
-                                    <th style="width: 20%">類型</th>
-                                    <th style="width: 45%">活動名稱 / 備註</th>
+                                    <th style="width: 18%">日期</th>
+                                    <th style="width: 24%">類型</th>
+                                    <th style="width: 43%">活動名稱 / 備註</th>
                                     <th style="width: 15%">狀態</th>
                                 </tr>
                             </thead>
@@ -818,10 +831,10 @@
                                 <tr v-for="event in homeEvents" :key="event.id">
                                     <td>{{ event.date }}</td>
                                     <td>
-                                        <span class="badge bg-dark" v-if="event.category === 'live'">🎤 舞台</span>
-                                        <span class="badge bg-secondary text-dark"
+                                        <span class="badge event-type-badge bg-dark" v-if="event.category === 'live'">🎤 舞台</span>
+                                        <span class="badge event-type-badge bg-secondary text-dark"
                                             v-else-if="event.category === 'cheki'">📸 特典</span>
-                                        <span class="badge bg-warning text-dark" v-else>🌱 Off會</span>
+                                        <span class="badge event-type-badge bg-warning text-dark" v-else>🌱 Off會</span>
                                     </td>
                                     <td><strong class="text-dark">{{ event.title }}</strong><br><span class="text-muted">📍 {{ event.note }}</span></td>
                                     <td>
