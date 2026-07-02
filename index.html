@@ -291,6 +291,11 @@
             padding-bottom: 0.1rem !important;
         }
 
+        .nav-buttons a.sidebar-btn {
+            text-decoration: none;
+            text-align: center;
+        }
+
         .detail-short {
             display: none;
         }
@@ -591,6 +596,10 @@
             本站由粉絲製作維護，提供最新舞台行程、特典會、Off 會情報，
             以及物販與應援須知、活動相簿等資訊。
         </p>
+        <h2>近期活動行程</h2>
+        <ul id="seo-upcoming-events">
+            <li>優芽 Yuume 近期舞台、特典會與 Off 會行程請見本站最新情報。</li>
+        </ul>
     </div>
 
     <div id="app" class="container-fluid p-0 background-container">
@@ -672,18 +681,18 @@
                 </div>
 
                     <div class="nav-buttons d-grid gap-1 px-0 px-lg-1">
-                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
-                            :class="{ active: currentTab === 'home' }" @click="currentTab = 'home'">🏠 最新行程 (首頁)</button>
-                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
-                            :class="{ active: currentTab === 'live' }" @click="currentTab = 'live'">🎤 舞台出演行程</button>
-                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
-                            :class="{ active: currentTab === 'cheki' }" @click="currentTab = 'cheki'">📸 特典會行程</button>
-                        <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
-                            :class="{ active: currentTab === 'off' }" @click="currentTab = 'off'">🌱 Off 會 </button>
-                        <button class="btn btn-outline-success btn-sm w-100 rounded-pill sidebar-btn"
-                            :class="{ active: currentTab === 'goods' }" @click="currentTab = 'goods'">
+                        <a href="#home" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                            :class="{ active: currentTab === 'home' }" @click.prevent="switchTab('home')">🏠 最新行程 (首頁)</a>
+                        <a href="#live" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                            :class="{ active: currentTab === 'live' }" @click.prevent="switchTab('live')">🎤 舞台出演行程</a>
+                        <a href="#cheki" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                            :class="{ active: currentTab === 'cheki' }" @click.prevent="switchTab('cheki')">📸 特典會行程</a>
+                        <a href="#off" class="btn btn-outline-secondary btn-sm w-100 rounded-pill sidebar-btn"
+                            :class="{ active: currentTab === 'off' }" @click.prevent="switchTab('off')">🌱 Off 會 </a>
+                        <a href="#goods" class="btn btn-outline-success btn-sm w-100 rounded-pill sidebar-btn"
+                            :class="{ active: currentTab === 'goods' }" @click.prevent="switchTab('goods')">
                             🛒 物販與應援須知
-                        </button>
+                        </a>
                         <div class="dropup gallery-dropup w-100">
                             <button class="btn btn-outline-secondary btn-sm w-100 rounded-pill dropdown-toggle sidebar-btn"
                                 :class="{ active: currentTab === 'gallery' }" type="button" id="galleryDropdown"
@@ -694,7 +703,7 @@
                                 style="background-color: var(--card-bg);">
                                 <li>
                                     <a class="dropdown-content-link text-start ps-3 py-2 d-block text-decoration-none text-dark fw-bold"
-                                        href="#" @click.prevent="selectGallery('all')">
+                                        href="#gallery/all" @click.prevent="selectGallery('all')">
                                         🖼️ 顯示全部相簿
                                     </a>
                                 </li>
@@ -704,7 +713,8 @@
                                 <li v-if="isCategoryLoading" class="text-center py-2 text-muted">載入分類中...</li>
                                 <li v-else v-for="category in albumCategories" :key="category.id">
                                     <a class="dropdown-content-link text-start ps-3 py-2 d-block text-decoration-none text-muted"
-                                        href="#" @click.prevent="selectGallery(category.folder_slug)">
+                                        :href="'#gallery/' + category.folder_slug"
+                                        @click.prevent="selectGallery(category.folder_slug)">
                                         📁 {{ category.name }}
                                     </a>
                                 </li>
@@ -1102,7 +1112,8 @@
                     isEventLoading: true,
                     totalVisits: null,
                     isVisitCountLoading: true,
-                    isDarkMode: false
+                    isDarkMode: false,
+                    pendingGalleryHash: null
                 }
             },
             computed: {
@@ -1149,9 +1160,67 @@
                 this.initGalleryData();
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
-
+                this.applyHashFromUrl();
+                window.addEventListener('hashchange', this.onHashChange);
             },
             methods: {
+                onHashChange() {
+                    this.applyHashFromUrl();
+                },
+                updateHash(hash) {
+                    if (location.hash !== hash) {
+                        location.hash = hash;
+                    }
+                },
+                switchTab(tab, { updateHash = true } = {}) {
+                    this.currentTab = tab;
+                    if (updateHash) {
+                        this.updateHash(tab === 'home' ? '#home' : `#${tab}`);
+                    }
+                },
+                applyHashFromUrl() {
+                    const raw = (location.hash || '#home').replace(/^#/, '');
+                    const parts = raw.split('/');
+                    const tab = parts[0] || 'home';
+                    const validTabs = ['home', 'live', 'cheki', 'off', 'goods', 'gallery'];
+                    if (!validTabs.includes(tab)) {
+                        this.switchTab('home');
+                        return;
+                    }
+                    if (tab === 'gallery') {
+                        const slug = parts[1] || 'all';
+                        if (slug !== 'all' && this.isCategoryLoading) {
+                            this.pendingGalleryHash = slug;
+                            this.currentTab = 'gallery';
+                            return;
+                        }
+                        if (this.currentTab === 'gallery' && this.currentGallery === slug) {
+                            return;
+                        }
+                        this.selectGallery(slug, { updateHash: false });
+                        return;
+                    }
+                    if (this.currentTab !== tab) {
+                        this.switchTab(tab, { updateHash: false });
+                    }
+                },
+                updateSeoUpcomingEvents() {
+                    const list = document.getElementById('seo-upcoming-events');
+                    if (!list) return;
+                    const categoryLabels = { live: '舞台出演', cheki: '特典會', off: 'Off 會' };
+                    const upcoming = (this.events || [])
+                        .filter(e => e.status !== '已結束' && e.date)
+                        .slice(0, 3);
+                    if (!upcoming.length) {
+                        list.innerHTML = '<li>目前尚無即將舉行的活動公告。</li>';
+                        return;
+                    }
+                    list.innerHTML = upcoming.map(event => {
+                        const typeLabel = categoryLabels[event.category] || '活動';
+                        const locationText = event.note ? `，場地：${event.note}` : '';
+                        return `<li>${event.date} ${typeLabel}：${event.title}${locationText}</li>`;
+                    }).join('');
+                },
                 withEventNumbers(category) {
                     if (!this.events?.length) return [];
                     const inCategory = this.events.filter(e => e.category === category);
@@ -1195,6 +1264,11 @@
                 async initGalleryData() {
                     await this.fetchAlbumCategories();
                     await this.preloadGalleryPhotos();
+                    if (this.pendingGalleryHash) {
+                        const slug = this.pendingGalleryHash;
+                        this.pendingGalleryHash = null;
+                        this.selectGallery(slug, { updateHash: false });
+                    }
                 },
                 async preloadGalleryPhotos() {
                     try {
@@ -1219,7 +1293,7 @@
                         }
                     });
                 },
-                async selectGallery(folderName) {
+                async selectGallery(folderName, { updateHash = true } = {}) {
                     this.closeGalleryDropdown();
                     this.currentTab = 'gallery';
                     this.currentGallery = folderName;
@@ -1232,6 +1306,9 @@
                         console.error("載入分類照片失敗:", error);
                     } finally {
                         this.isPhotosLoading = false;
+                    }
+                    if (updateHash) {
+                        this.updateHash(`#gallery/${folderName}`);
                     }
                     // 須等 loading 結束、照片 <a> 出現在 DOM 後再掃描
                     this.refreshLightbox();
@@ -1285,6 +1362,7 @@
                     } finally {
                         this.isEventLoading = false;
                         this.updateEventJsonLd();
+                        this.updateSeoUpcomingEvents();
                     }
                 },
                 updateEventJsonLd() {
