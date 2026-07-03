@@ -1138,7 +1138,7 @@
                     blogUrl: 'https://yuume-aoba.blogspot.com/',
                     shopUrl: 'https://myship.7-11.com.tw/general/detail/GM2410024418820',
                     currentTime: '',
-                    lastUpdateTime: '2026年07月2日 00:05',
+                    lastUpdateTime: '載入中...',
                     currentTab: 'home',
                     currentGallery: 'all',
                     photos: [],
@@ -1456,12 +1456,32 @@
                     el.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
                     if (!existing) document.head.appendChild(el);
                 },
+                formatLastUpdated(isoString) {
+                    if (!isoString) return '--';
+                    const parts = new Intl.DateTimeFormat('zh-TW', {
+                        timeZone: 'Asia/Taipei',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    }).formatToParts(new Date(isoString));
+                    const get = (type) => parts.find((p) => p.type === type)?.value || '';
+                    const day = parseInt(get('day'), 10);
+                    return `${get('year')}年${get('month')}月${day}日 ${get('hour')}:${get('minute')}`;
+                },
                 async initVisitCount() {
                     this.isVisitCountLoading = true;
                     try {
                         const stats = await this.fetchJson(`${API_BASE}/stats`);
                         if (stats && typeof stats.total_visits === 'number') {
                             this.totalVisits = stats.total_visits;
+                        }
+                        if (stats?.last_updated_at) {
+                            this.lastUpdateTime = this.formatLastUpdated(stats.last_updated_at);
+                        } else if (this.lastUpdateTime === '載入中...') {
+                            this.lastUpdateTime = '--';
                         }
 
                         if (!sessionStorage.getItem('yuume_visit_counted')) {
