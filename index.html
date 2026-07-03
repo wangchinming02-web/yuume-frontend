@@ -649,9 +649,21 @@
             margin-left: 0.25rem;
         }
 
+        .home-intro {
+            padding: 0.55rem 0.75rem !important;
+            margin-bottom: 0.75rem !important;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
         .home-intro a {
             color: #4a7c59;
             font-weight: 600;
+            text-decoration: none;
+        }
+
+        .home-intro a:hover {
+            text-decoration: underline;
         }
 
         .calendar-hint {
@@ -831,14 +843,10 @@
                     </ol>
                 </nav>
 
-                <section class="home-intro card info-card p-3 mb-4 shadow-sm" v-if="currentTab === 'home'">
-                    <p class="mb-2 text-dark">
-                        <strong>優芽 Yuume</strong>（ゆうめ／青羽優芽）是活動於北部的地下偶像 solo 演出者。
-                        本應援站由粉絲製作維護，整理最新舞台出演、特典會與 Off 會行程，以及物販須知與活動相簿。
-                    </p>
-                    <p class="mb-0 small text-muted">
-                        第一次應援？請看 <a href="about.html">關於優芽與本站</a>。
-                        遠征或想一次記下多場行程，可使用下方「匯入 Google 日曆」或下載 .ics 檔。
+                <section class="home-intro card info-card shadow-sm" v-if="currentTab === 'home'">
+                    <p class="mb-0 text-muted">
+                        <strong class="text-dark">優芽 Yuume</strong>（ゆうめ／青羽優芽）— 北部地下偶像 solo 演出者粉絲應援站，整理舞台・特典・Off 會行程。
+                        <a href="about.html">關於本站</a>｜下方可匯入行事曆
                     </p>
                 </section>
 
