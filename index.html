@@ -648,6 +648,18 @@
             text-decoration: none;
             margin-left: 0.25rem;
         }
+
+        .home-intro a {
+            color: #4a7c59;
+            font-weight: 600;
+        }
+
+        .calendar-hint {
+            flex: 1 1 100%;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin: 0;
+        }
     </style>
 </head>
 
@@ -819,6 +831,17 @@
                     </ol>
                 </nav>
 
+                <section class="home-intro card info-card p-3 mb-4 shadow-sm" v-if="currentTab === 'home'">
+                    <p class="mb-2 text-dark">
+                        <strong>優芽 Yuume</strong>（ゆうめ／青羽優芽）是活動於北部的地下偶像 solo 演出者。
+                        本應援站由粉絲製作維護，整理最新舞台出演、特典會與 Off 會行程，以及物販須知與活動相簿。
+                    </p>
+                    <p class="mb-0 small text-muted">
+                        第一次應援？請看 <a href="about.html">關於優芽與本站</a>。
+                        遠征或想一次記下多場行程，可使用下方「匯入 Google 日曆」或下載 .ics 檔。
+                    </p>
+                </section>
+
                 <section class="mb-4" v-if="currentTab === 'home'">
                     <h4 class="section-title mb-3">★★★ 最新情報 ★★★</h4>
 
@@ -857,15 +880,23 @@
                     <h4 class="section-title mb-3">📅 近期行程公告 ▼</h4>
 
                     <div class="calendar-toolbar" v-if="!isEventLoading && upcomingCalendarEvents.length">
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill"
+                            style="background-color:#4a7c59;border-color:#4a7c59;"
+                            @click="importAllToGoogleCalendar">
+                            📅 匯入 Google 日曆（全部 {{ upcomingCalendarEvents.length }} 場）
+                        </button>
                         <button type="button" class="btn btn-sm btn-outline-success rounded-pill"
                             @click="downloadCalendarIcs">
-                            📥 下載行事曆 (.ics)
+                            📥 下載 .ics（Apple／Outlook 適用）
                         </button>
-                        <a v-if="nextUpcomingEvent" class="btn btn-sm btn-outline-primary rounded-pill"
+                        <a v-if="nextUpcomingEvent" class="btn btn-sm btn-outline-secondary rounded-pill"
                             :href="googleCalendarUrl(nextUpcomingEvent)" target="_blank" rel="noopener">
-                            📅 下一場加入 Google 日曆
+                            ＋ 只加下一場
                         </a>
-                        <span class="text-muted small">共 {{ upcomingCalendarEvents.length }} 場未結束行程</span>
+                        <p class="calendar-hint mb-0">
+                            Google 一次匯入多場：按上方綠色按鈕會下載 <code>yuume-schedule.ics</code> 並開啟 Google 日曆設定頁，
+                            請點「匯入」→ 選剛下載的檔案即可（Google 不允許網站直接塞入多筆，需這一步）。
+                        </p>
                     </div>
 
                     <div class="table-responsive home-table-container">
@@ -1577,7 +1608,7 @@
                     const events = this.upcomingCalendarEvents;
                     if (!events.length) {
                         alert('目前沒有可匯出的行程。');
-                        return;
+                        return false;
                     }
                     const blob = new Blob([this.buildIcsContent(events)], {
                         type: 'text/calendar;charset=utf-8'
@@ -1587,6 +1618,11 @@
                     link.download = 'yuume-schedule.ics';
                     link.click();
                     URL.revokeObjectURL(link.href);
+                    return true;
+                },
+                importAllToGoogleCalendar() {
+                    if (!this.downloadCalendarIcs()) return;
+                    window.open('https://calendar.google.com/calendar/r/settings/export', '_blank', 'noopener');
                 },
                 googleCalendarUrl(event) {
                     const start = this.formatIcsDate(event.date);
