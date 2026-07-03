@@ -617,6 +617,37 @@
                 min-width: 0;
             }
         }
+
+        .page-breadcrumb {
+            font-size: 0.85rem;
+        }
+
+        .page-breadcrumb .breadcrumb-item a {
+            color: #4a7c59;
+            text-decoration: none;
+        }
+
+        .page-breadcrumb .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+
+        .calendar-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-toolbar .btn {
+            font-size: 0.85rem;
+        }
+
+        .gcal-link {
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-left: 0.25rem;
+        }
     </style>
 </head>
 
@@ -777,6 +808,17 @@
             <div class="col-12 p-4 p-md-5 main-content-scroll"
                 :class="{ 'home-tab-active': currentTab === 'home' }">
 
+                <nav aria-label="breadcrumb" class="page-breadcrumb mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li v-for="(crumb, index) in breadcrumbItems" :key="crumb.name"
+                            class="breadcrumb-item"
+                            :class="{ active: index === breadcrumbItems.length - 1 }">
+                            <a v-if="index < breadcrumbItems.length - 1" :href="crumb.url">{{ crumb.name }}</a>
+                            <span v-else>{{ crumb.name }}</span>
+                        </li>
+                    </ol>
+                </nav>
+
                 <section class="mb-4" v-if="currentTab === 'home'">
                     <h4 class="section-title mb-3">★★★ 最新情報 ★★★</h4>
 
@@ -814,6 +856,18 @@
                 <section class="home-schedule-section mb-0" v-if="currentTab === 'home'">
                     <h4 class="section-title mb-3">📅 近期行程公告 ▼</h4>
 
+                    <div class="calendar-toolbar" v-if="!isEventLoading && upcomingCalendarEvents.length">
+                        <button type="button" class="btn btn-sm btn-outline-success rounded-pill"
+                            @click="downloadCalendarIcs">
+                            📥 下載行事曆 (.ics)
+                        </button>
+                        <a v-if="nextUpcomingEvent" class="btn btn-sm btn-outline-primary rounded-pill"
+                            :href="googleCalendarUrl(nextUpcomingEvent)" target="_blank" rel="noopener">
+                            📅 下一場加入 Google 日曆
+                        </a>
+                        <span class="text-muted small">共 {{ upcomingCalendarEvents.length }} 場未結束行程</span>
+                    </div>
+
                     <div class="table-responsive home-table-container">
                         <table class="table table-hover align-middle custom-table" :key="'table-home'">
                             <thead>
@@ -839,7 +893,12 @@
 
                             <tbody v-else>
                                 <tr v-for="event in homeEvents" :key="event.id">
-                                    <td>{{ event.date }}</td>
+                                    <td>
+                                        {{ event.date }}
+                                        <a v-if="event.status !== '已結束'" class="gcal-link"
+                                            :href="googleCalendarUrl(event)" target="_blank" rel="noopener"
+                                            title="加入 Google 日曆">📅</a>
+                                    </td>
                                     <td>
                                         <span class="badge event-type-badge bg-dark" v-if="event.category === 'live'">🎤 舞台</span>
                                         <span class="badge event-type-badge bg-secondary text-dark"
@@ -1187,6 +1246,39 @@
                     if (this.isVisitCountLoading) return '...';
                     if (this.totalVisits === null) return '--';
                     return this.totalVisits.toLocaleString('zh-TW');
+                },
+                upcomingCalendarEvents() {
+                    return (this.events || [])
+                        .filter(e => e.status !== '已結束' && e.date)
+                        .sort((a, b) => new Date(a.date) - new Date(b.date));
+                },
+                nextUpcomingEvent() {
+                    return this.upcomingCalendarEvents[0] || null;
+                },
+                breadcrumbItems() {
+                    const siteUrl = 'https://wangchinming02-web.github.io/yuume-frontend/';
+                    const items = [{ name: '優芽 Yuume 應援網站', url: siteUrl }];
+                    const tabLabels = {
+                        home: '最新行程',
+                        live: '舞台出演行程',
+                        cheki: '特典會行程',
+                        off: 'Off 會',
+                        goods: '物販與應援須知',
+                        gallery: '活動相簿'
+                    };
+                    if (this.currentTab !== 'home') {
+                        items.push({
+                            name: tabLabels[this.currentTab] || this.currentTab,
+                            url: `${siteUrl}#${this.currentTab}`
+                        });
+                    }
+                    if (this.currentTab === 'gallery' && this.currentGallery !== 'all') {
+                        items.push({
+                            name: this.currentAlbumTitle,
+                            url: `${siteUrl}#gallery/${this.currentGallery}`
+                        });
+                    }
+                    return items;
                 }
             },
             mounted() {
@@ -1198,6 +1290,7 @@
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
                 this.applyHashFromUrl();
+                this.$nextTick(() => this.updateBreadcrumbJsonLd());
                 window.addEventListener('hashchange', this.onHashChange);
             },
             methods: {
@@ -1214,6 +1307,7 @@
                     if (updateHash) {
                         this.updateHash(tab === 'home' ? '#home' : `#${tab}`);
                     }
+                    this.$nextTick(() => this.updateBreadcrumbJsonLd());
                 },
                 applyHashFromUrl() {
                     const raw = (location.hash || '#home').replace(/^#/, '');
@@ -1239,6 +1333,8 @@
                     }
                     if (this.currentTab !== tab) {
                         this.switchTab(tab, { updateHash: false });
+                    } else {
+                        this.$nextTick(() => this.updateBreadcrumbJsonLd());
                     }
                 },
                 updateSeoUpcomingEvents() {
@@ -1349,6 +1445,7 @@
                     }
                     // 須等 loading 結束、照片 <a> 出現在 DOM 後再掃描
                     this.refreshLightbox();
+                    this.$nextTick(() => this.updateBreadcrumbJsonLd());
                 },
                 selectGalleryById(categoryId) {
                     const category = this.albumCategories.find(c => c.id == categoryId);
@@ -1401,6 +1498,105 @@
                         this.updateEventJsonLd();
                         this.updateSeoUpcomingEvents();
                     }
+                },
+                updateBreadcrumbJsonLd() {
+                    const siteUrl = 'https://wangchinming02-web.github.io/yuume-frontend/';
+                    const itemListElement = this.breadcrumbItems.map((crumb, index) => ({
+                        '@type': 'ListItem',
+                        position: index + 1,
+                        name: crumb.name,
+                        item: crumb.url
+                    }));
+                    const existing = document.getElementById('breadcrumb-json-ld');
+                    const el = existing || document.createElement('script');
+                    el.type = 'application/ld+json';
+                    el.id = 'breadcrumb-json-ld';
+                    el.textContent = JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        '@id': siteUrl + '#breadcrumb',
+                        itemListElement
+                    });
+                    if (!existing) document.head.appendChild(el);
+                },
+                getCategoryLabel(category) {
+                    return ({ live: '舞台出演', cheki: '特典會', off: 'Off 會' })[category] || '活動';
+                },
+                escapeIcs(value) {
+                    return String(value ?? '')
+                        .replace(/\\/g, '\\\\')
+                        .replace(/;/g, '\\;')
+                        .replace(/,/g, '\\,')
+                        .replace(/\r?\n/g, '\\n');
+                },
+                formatIcsDate(dateStr) {
+                    return String(dateStr).replace(/-/g, '');
+                },
+                formatIcsEndDate(dateStr) {
+                    const end = new Date(dateStr + 'T00:00:00');
+                    end.setDate(end.getDate() + 1);
+                    const y = end.getFullYear();
+                    const m = String(end.getMonth() + 1).padStart(2, '0');
+                    const d = String(end.getDate()).padStart(2, '0');
+                    return `${y}${m}${d}`;
+                },
+                formatIcsStamp() {
+                    return new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+                },
+                buildIcsContent(events) {
+                    const siteUrl = 'https://wangchinming02-web.github.io/yuume-frontend/';
+                    const lines = [
+                        'BEGIN:VCALENDAR',
+                        'VERSION:2.0',
+                        'PRODID:-//Yuume Fan Site//zh-TW',
+                        'CALSCALE:GREGORIAN',
+                        'METHOD:PUBLISH',
+                        'X-WR-CALNAME:優芽 Yuume 行程',
+                        'X-WR-TIMEZONE:Asia/Taipei'
+                    ];
+                    events.forEach(event => {
+                        const summary = `[優芽] ${event.title}`;
+                        const description = `${this.getCategoryLabel(event.category)}｜${event.status}\\n${siteUrl}`;
+                        lines.push(
+                            'BEGIN:VEVENT',
+                            `UID:yuume-event-${event.id}@yuume-frontend`,
+                            `DTSTAMP:${this.formatIcsStamp()}`,
+                            `DTSTART;VALUE=DATE:${this.formatIcsDate(event.date)}`,
+                            `DTEND;VALUE=DATE:${this.formatIcsEndDate(event.date)}`,
+                            `SUMMARY:${this.escapeIcs(summary)}`,
+                            `DESCRIPTION:${this.escapeIcs(description)}`,
+                            ...(event.note ? [`LOCATION:${this.escapeIcs(event.note)}`] : []),
+                            `URL:${siteUrl}`,
+                            'END:VEVENT'
+                        );
+                    });
+                    lines.push('END:VCALENDAR');
+                    return lines.join('\r\n');
+                },
+                downloadCalendarIcs() {
+                    const events = this.upcomingCalendarEvents;
+                    if (!events.length) {
+                        alert('目前沒有可匯出的行程。');
+                        return;
+                    }
+                    const blob = new Blob([this.buildIcsContent(events)], {
+                        type: 'text/calendar;charset=utf-8'
+                    });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'yuume-schedule.ics';
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                },
+                googleCalendarUrl(event) {
+                    const start = this.formatIcsDate(event.date);
+                    const end = this.formatIcsEndDate(event.date);
+                    const text = encodeURIComponent(`[優芽] ${event.title}`);
+                    const details = encodeURIComponent(
+                        `${this.getCategoryLabel(event.category)}｜${event.status}\nhttps://wangchinming02-web.github.io/yuume-frontend/`
+                    );
+                    const location = encodeURIComponent(event.note || '');
+                    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${location}`;
                 },
                 updateEventJsonLd() {
                     const siteUrl = 'https://wangchinming02-web.github.io/yuume-frontend/';
